@@ -50,8 +50,8 @@ class Text(clutter.Box):
         self.text.set_color(clutter.Color(255, 255, 255))
 
         self.shadow = clutter.Text(font, text)
-        self.text.set_line_alignment(ALIGN_CENTER)
-        self.text.set_line_wrap(True)
+        self.shadow.set_line_alignment(ALIGN_CENTER)
+        self.shadow.set_line_wrap(True)
         self.shadow.set_color(clutter.Color(0, 0, 0))
         offset = int(self.font_size() / 24) + 2
         self.shadow.set_position(offset, offset)
@@ -70,9 +70,25 @@ class Text(clutter.Box):
             font_size = int(match.group().strip())
         return font_size
 
+    def set_background_color(self, color):
+        """
+        Set the background color of this text box. Useful for debugging
+        purposes.
+        """
+        super(Text, self).set_color(color)
+
     def set_color(self, color):
         """
         Set the color of our text by passing this call off to the actual text.
         """
         self.text.set_color(color)
+
+    def set_size(self, width, height):
+        """
+        """
+        super(Text, self).set_width(width)
+        self.text.set_width(width)
+        self.shadow.set_width(width)
+        offset = int(self.font_size() / 24) + 2
+        self.shadow.set_position(offset, offset)
 

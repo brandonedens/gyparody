@@ -87,3 +87,14 @@ class CategoryName(clutter.Box):
 
         self.text = Text(config.category_font, text)
         self.add(self.text)
+
+    def set_size(self, width, height):
+        """
+        """
+        super(CategoryName, self).set_size(width, height)
+        self.text.set_size(width, height)
+        layout = self.get_layout_manager()
+        layout.set_alignment(self.text,
+                             clutter.BIN_ALIGNMENT_CENTER,
+                             clutter.BIN_ALIGNMENT_CENTER)
+
