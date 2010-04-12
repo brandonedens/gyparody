@@ -54,11 +54,43 @@ class Category(clutter.Box):
         layout = self.get_layout_manager()
         layout.set_vertical(True)
 
-        self.name = Text("Haettenschweiler 24", 'this is good')
+        self.name = CategoryName('hello world')
         self.add(self.name)
 
-        #answers = []
         for i in xrange(5):
             answer = Answer()
             self.add(answer)
 
+    def set_size(self, width, height):
+        """
+        """
+        super(Category, self).set_size(width, height)
+        self.name.set_size(width, height)
+        print "height = %s" % height
+        children = self.get_children()
+        for child in children:
+            child.set_size(width, height / len(children))
+
+    def set_width(self, value):
+        """
+        """
+        super(Category, self).set_width(value)
+        # Update the category name.
+        self.name.set_width(value)
+        # Update the category values.
+        for child in self.get_children():
+            child.set_width(value)
+
+class CategoryName(clutter.Box):
+
+    def __init__(self, text):
+        """
+        """
+        super(CategoryName, self).__init__(
+            clutter.BinLayout(clutter.BIN_ALIGNMENT_CENTER,
+                              clutter.BIN_ALIGNMENT_CENTER))
+
+        self.set_color(config.square_background_color)
+
+        self.text = Text(config.category_font, text)
+        self.add(self.text)
