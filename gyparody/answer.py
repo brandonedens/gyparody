@@ -34,7 +34,6 @@ from text import Text
 ## Constants
 ###############################################################################
 
-BACKGROUND_COLOR = clutter.Color(6, 11, 121)
 VALUE_FONT_COLOR = clutter.Color(217, 161, 71)
 
 VALUE_FONT = "Haettenschweiler 64"
@@ -61,7 +60,7 @@ class Answer(clutter.Box):
         super(Answer, self).__init__(
             clutter.BinLayout(clutter.BIN_ALIGNMENT_CENTER,
                               clutter.BIN_ALIGNMENT_CENTER))
-        self.set_color(BACKGROUND_COLOR)
+        self.set_color(config.square_background_color)
 
         self.text = Text(config.answer_value_font, '$400')
         self.text.set_color(VALUE_FONT_COLOR)
