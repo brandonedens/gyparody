@@ -46,7 +46,7 @@ class Category(clutter.Box):
     """
     """
 
-    def __init__(self):
+    def __init__(self, category):
         """
         """
         super(Category, self).__init__(clutter.BoxLayout())
@@ -55,11 +55,12 @@ class Category(clutter.Box):
         layout.set_spacing(10)
         layout.set_vertical(True)
 
-        self.name = CategoryName('hello world')
+        self.name = CategoryName(category.keys()[0])
         self.add(self.name)
 
-        for i in xrange(5):
-            answer = Answer()
+        answers = category.values()[0]
+        for i in xrange(len(answers)):
+            answer = Answer(answers[i], value=(200 * (i + 1)))
             self.add(answer)
 
     def set_size(self, width, height):

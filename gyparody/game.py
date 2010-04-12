@@ -58,7 +58,7 @@ class Game(clutter.Stage):
         self.players = []
 
         # Setup the game stage.
-        self.game_stage = GameStage()
+        self.game_stage = GameStage(self.load_round())
 
         # Setup the admin screen.
         self.connect('destroy', clutter.main_quit)
@@ -75,7 +75,6 @@ class Game(clutter.Stage):
             # Set game stage fullscreen or not.
             self.game_stage.set_fullscreen(not self.game_stage.get_fullscreen())
 
-
     def add_player(self, name):
         self.players.append(Player(name))
 
@@ -85,6 +84,7 @@ class Game(clutter.Stage):
         round1_file = open(config.round_1_data, 'r')
         round1 = yaml.load(round1_file)
         round1_file.close()
+        return round1
 
 
 ###############################################################################

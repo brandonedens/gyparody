@@ -44,7 +44,7 @@ MAIN_STAGE_BACKGROUND_COLOR = clutter.Color(2, 2, 2)
 
 class GameStage(clutter.Stage):
 
-    def __init__(self):
+    def __init__(self, round):
         super(GameStage, self).__init__()
 
         logging.info('Initializing game stage.')
@@ -71,12 +71,10 @@ class GameStage(clutter.Stage):
         spacing = int(self.get_width() * 0.01)
         layout.set_spacing(spacing)
 
-        self.categories = []
-        for x in xrange(6):
-            category = Category()
-            self.categories.append(category)
+        for category in round:
+            category = Category(category)
             self.box.add(category)
-            category.set_size(self.get_width() / 6 - spacing,
+            category.set_size(self.get_width() / len(round) - spacing,
                               self.get_height())
 
         self.add(self.box)
@@ -92,7 +90,7 @@ class GameStage(clutter.Stage):
             layout.set_spacing(spacing)
             children = self.box.get_children()
             for child in children:
-                child.set_size(self.get_width() / 6 - spacing,
+                child.set_size(self.get_width() / len(children) - spacing,
                                self.get_height())
         except AttributeError:
             # If there is an attribute error then its most likely because

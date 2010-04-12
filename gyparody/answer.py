@@ -54,7 +54,7 @@ class Answer(clutter.Box):
     """
     """
 
-    def __init__(self):
+    def __init__(self, answer, value):
         """
         """
         super(Answer, self).__init__(
@@ -62,7 +62,10 @@ class Answer(clutter.Box):
                               clutter.BIN_ALIGNMENT_CENTER))
         self.set_color(config.square_background_color)
 
-        self.text = Text(config.answer_value_font, '$400')
+        self.answer = answer['answer']
+        self.question = answer['question']
+
+        self.text = Text(config.answer_value_font, "$%s" % value)
         self.text.set_color(VALUE_FONT_COLOR)
         self.add(self.text)
 
