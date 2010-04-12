@@ -64,6 +64,26 @@ class Game(clutter.Stage):
         self.connect('destroy', clutter.main_quit)
         self.connect('key-press-event', self.on_press)
         self.set_color(clutter.Color(0, 0, 0))
+
+        # Draw administrative controls
+        # Setup player name input box
+        self.player_setup = clutter.Box(clutter.BoxLayout())
+        self.add(self.player_setup)
+        layout = self.player_setup.get_layout_manager()
+        layout.set_vertical(True)
+        player_label = clutter.Text('', 'player1: ')
+        player_label.set_color(clutter.Color(250, 250, 250))
+        self.player_setup.add(player_label)
+        player1_name = clutter.Text('', 'John Doe')
+        player1_name.set_color(clutter.Color(250, 250, 250))
+        player1_name.set_editable(True)
+        self.player_setup.add(player1_name)
+        player_label = clutter.Text('', 'player2: ')
+        player_label.set_color(clutter.Color(250, 250, 250))
+        self.player_setup.add(player_label)
+        player_label = clutter.Text('', 'player3: ')
+        player_label.set_color(clutter.Color(250, 250, 250))
+        self.player_setup.add(player_label)
         self.show()
 
     def on_press(self, actor, event):
