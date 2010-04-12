@@ -1,0 +1,62 @@
+---
+- Network Protocols:
+    - answer: Where UDP fits in the OSI Model
+      question: What is Layer 4?
+    - answer: Where UDP fits in the OSI Model
+      question: What is Layer 4?
+    - answer: Where UDP fits in the OSI Model
+      question: What is Layer 4?
+    - answer: Where UDP fits in the OSI Model
+      question: What is Layer 4?
+    - answer: The three way handshake of TCP
+      question: What is SYN, SYN/ACK, ACK?
+
+- Acronyms:
+    - answer: SQL
+      question: What is Structured Query Language?
+    - answer: GNU
+      question: What is GNU\'s Not Unix?
+    - answer: GNU
+      question: What is GNU\'s Not Unix?
+    - answer: GNU
+      question: What is GNU\'s Not Unix?
+    - answer: GNU
+      question: What is GNU\'s Not Unix?
+
+- Crypto:
+    - answer: This algorithm developed by Schneier in 1993 is also the mascot animal for OpenBSD
+      question: What is Blowfish?
+    - answer: Brandon Edens wrote this software.
+      question: What is Gyparody?
+    - answer: Brandon Edens wrote this software.
+      question: What is Gyparody?
+    - answer: Brandon Edens wrote this software.
+      question: What is Gyparody?
+    - answer: Brandon Edens wrote this software.
+      question: What is Gyparody?
+
+- Old Computers:
+    - answer:
+        img: 'vic20.jpg'
+      question: What is a VIC-20?
+    - answer: This is the best.
+      question: What is a yoyo?
+    - answer: This is the best.
+      question: What is a yoyo?
+    - answer: This is the best.
+      question: What is a yoyo?
+    - answer: This is the best.
+      question: What is a yoyo?
+
+- Exploit Code:
+    - answer: This worm spread mainly through the Windows Server Service vulnerability patched with MS08-067 and received major media coverage on April 1st 2009
+      question: What is Conficker/Downadup?
+    - answer: Is the worst thing that can ever happen.
+      question: What is installing Windows on a computer?
+    - answer: Is the worst thing that can ever happen.
+      question: What is installing Windows on a computer?
+    - answer: Is the worst thing that can ever happen.
+      question: What is installing Windows on a computer?
+    - answer: Is the worst thing that can ever happen.
+      question: What is installing Windows on a computer?
+
