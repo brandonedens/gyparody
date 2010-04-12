@@ -62,19 +62,22 @@ class Config(object):
         # Background color
         self.background_color = clutter.Color(6, 11, 121)
 
+        # Square background color
+        self.square_background_color = clutter.Color(6, 11, 121)
+
         # Category settings
-        self.category_font = "Haettenschweiler 24"
+        self.category_font = "Haettenschweiler 18"
 
         # Answer settings
-        self.answer_font = "ScaKorinna 24"
-        self.answer_value_font = "ScaKorinna 26"
+        self.answer_font = "ScaKorinna 18"
+        self.answer_value_font = "ScaKorinna 20"
 
         # Answer value font
         self.value_color = clutter.Color(217, 161, 71)
-        self.answer_font = "ScaKorinna 64"
+        self.answer_font = "ScaKorinna 20"
 
         # Spacing between categories
-        self.category_spacing = 20
+        self.category_spacing = 10
 
         self.round_1_data = '/home/brandon/src/gyparody/docs/round1.yaml'
 
