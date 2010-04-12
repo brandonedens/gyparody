@@ -68,14 +68,15 @@ class GameStage(clutter.Stage):
         self.box = clutter.Box(clutter.BoxLayout())
         layout = self.box.get_layout_manager()
         layout.set_vertical(False)
-        #layout.set_spacing(config.category_spacing)
+        spacing = int(self.get_width() * 0.01)
+        layout.set_spacing(spacing)
 
         self.categories = []
         for x in xrange(6):
             category = Category()
             self.categories.append(category)
             self.box.add(category)
-            category.set_size(self.get_width() / 6,
+            category.set_size(self.get_width() / 6 - spacing,
                               self.get_height())
 
         self.add(self.box)

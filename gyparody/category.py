@@ -52,6 +52,7 @@ class Category(clutter.Box):
         super(Category, self).__init__(clutter.BoxLayout())
 
         layout = self.get_layout_manager()
+        layout.set_spacing(10)
         layout.set_vertical(True)
 
         self.name = CategoryName('hello world')
@@ -65,21 +66,12 @@ class Category(clutter.Box):
         """
         """
         super(Category, self).set_size(width, height)
-        self.name.set_size(width, height)
-        print "height = %s" % height
+        spacing = int(height * 0.01)
+        layout = self.get_layout_manager()
+        layout.set_spacing(spacing)
         children = self.get_children()
         for child in children:
-            child.set_size(width, height / len(children))
-
-    def set_width(self, value):
-        """
-        """
-        super(Category, self).set_width(value)
-        # Update the category name.
-        self.name.set_width(value)
-        # Update the category values.
-        for child in self.get_children():
-            child.set_width(value)
+            child.set_size(width, (height / len(children)) - spacing)
 
 class CategoryName(clutter.Box):
 
