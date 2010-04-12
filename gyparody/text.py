@@ -42,8 +42,7 @@ class Text(clutter.Box):
     def __init__(self, font, text):
         """
         """
-        super(Text, self).__init__(
-            clutter.FixedLayout())
+        super(Text, self).__init__(clutter.FixedLayout())
 
         self.text = clutter.Text(font, text)
         self.text.set_line_alignment(ALIGN_CENTER)
@@ -72,8 +71,8 @@ class Text(clutter.Box):
         return font_size
 
     def set_color(self, color):
-         """
-         """
-         self.text.set_color(color)
-
+        """
+        Set the color of our text by passing this call off to the actual text.
+        """
+        self.text.set_color(color)
 
