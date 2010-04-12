@@ -1,0 +1,57 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+include /usr/share/python/python.mk
+
+PACKAGE_NAME=gyparody
+PACKAGE_DIR=$(CURDIR)/debian/$(PACKAGE_NAME)
+SITE_PACKAGES_DIR=$(PACKAGE_DIR)$(call py_libdir,$(shell pyversions -d))
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	touch configure-stamp
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	find . -name '*.py[co]' -delete
+	rm -rf build-stamp configure-stamp
+	rm -rf _build build
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+
+	python setup.py install --no-compile --install-layout=deb --root $(PACKAGE_DIR)
+
+    # Install configuration file
+	install -m 644 $(CURDIR)/etc/gyparody.conf $(PACKAGE_DIR)/etc/gyparody/gyparody.conf
+
+    # Install executables
+	install -m 755 $(CURDIR)/bin/gyparody $(PACKAGE_DIR)/usr/bin/gyparody
+
+
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	dh_pysupport
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-arch: install
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install configure
+
