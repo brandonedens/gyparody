@@ -82,21 +82,29 @@ class GameStage(clutter.Stage):
         self.add(self.box)
         self.show()
 
-    def resize(self, width, height):
+    def set_size(self, width, height):
         """
-        Resize all contained elements.
         """
-        self.spacing = int(self.get_width() * 0.01)
-        for category in self.categories:
-            category.resize((self.get_width() / 6) - self.spacing,
-                            height)
+        try:
+            super(GameStage, self).set_size(width, height)
+            layout = self.box.get_layout_manager()
+            spacing = int(self.get_width() * 0.01)
+            layout.set_spacing(spacing)
+            children = self.box.get_children()
+            for child in children:
+                child.set_size(self.get_width() / 6 - spacing,
+                               self.get_height())
+        except AttributeError:
+            # If there is an attribute error then its most likely because
+            # self.box did not exist because the stage is first
+            # loading. Therefore we simply pass on this exception as during
+            # loading correctly size of internals will be set.
+            pass
 
     def on_fullscreen(self, stage):
         """
         Signal for when main game stage is fullscreened. This signal resizes
         all contained elements.
         """
-        logging.debug("on_fullscreen called. new stage width = %s height = %s."
-                      % (self.get_width(), self.get_height()))
-        self.resize(self.get_width(), self.get_height())
+        self.set_size(self.get_width(), self.get_height())
 
