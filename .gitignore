@@ -1,1 +1,9 @@
 *.pyc
+build
+build-stamp
+debian/files
+debian/gyparody.debhelper.log
+debian/gyparody.postinst.debhelper
+debian/gyparody.prerm.debhelper
+debian/gyparody.substvars
+debian/gyparody
