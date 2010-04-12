@@ -8,7 +8,8 @@ setup(name='gyparody',
       description="Gyparody a game to play with friends.",
       long_description="""\
 Gyparody is a game to play with friends and an audience.""",
-      classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+      # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+      classifiers=[],
       keywords='gyparody game-show',
       author='Brandon Edens',
       author_email='brandon@as220.org',

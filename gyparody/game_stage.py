@@ -94,7 +94,7 @@ class GameStage(clutter.Stage):
         Signal for when main game stage is fullscreened. This signal resizes
         all contained elements.
         """
-        logging.debug("on_fullscreen callback called. new stage width = %s height = %s."
+        logging.debug("on_fullscreen called. new stage width = %s height = %s."
                       % (self.get_width(), self.get_height()))
         self.resize(self.get_width(), self.get_height())
 
