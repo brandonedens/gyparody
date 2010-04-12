@@ -2,13 +2,13 @@ Source: gyparody
 Section: unknown
 Priority: extra
 Maintainer: Brandon Edens <brandon@as220.org>
-Build-Depends: debhelper (>= 7), python-all (>= 2.5.4-1~), python-setuptools (>= 0.6c5-1~), python-django, python-yaml
+Build-Depends: debhelper (>= 7), python-all (>= 2.5.4-1~), python-setuptools (>= 0.6c5-1~), python-yaml
 Standards-Version: 3.8.1
-Homepage: http://as220.org/git/gitweb/?p=gyparody.git;a=summary
+Homepage: http://brandonedens.org/git/gyparody.git/
 
 Package: gyparody
 Architecture: any
-Depends: ${python:Depends}, mysql-server, python-django, python-mysqldb, python-yaml, xdotool, mpg321
+Depends: ${python:Depends}, python-yaml
 Description: Gyparody software.
  Software for running gyparody a game for the whole family.
 
