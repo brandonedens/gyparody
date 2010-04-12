@@ -92,7 +92,7 @@ class Config(object):
         absolute_path = None
         for location in CONFIG_LOCATIONS:
             if os.path.isfile(location):
-                absolute_path = path
+                absolute_path = location
         return absolute_path
 
 
