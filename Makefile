@@ -7,7 +7,7 @@ export PYTHONPATH = $(shell echo "$$PYTHONPATH"):./gyparody
 all: clean-pyc check test
 
 check:
-	@$(PYTHON) utils/check_sources.py -i lib -i debian -i build -i tests/coverage.py .
+	@$(PYTHON) utils/check_sources.py -i libs -i debian -i build -i tests/coverage.py .
 
 clean: clean-pyc clean-patchfiles
 
