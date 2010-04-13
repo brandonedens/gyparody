@@ -34,6 +34,12 @@ install: build
     # Install configuration file
 	install -m 644 $(CURDIR)/etc/gyparody.conf $(PACKAGE_DIR)/etc/gyparody/gyparody.conf
 
+    # Install fonts
+	install -m 644 $(CURDIR)/fonts/gyparody.ttf $(PACKAGE_DIR)/usr/share/fonts/gyparody/
+	install -m 644 $(CURDIR)/fonts/HATTEN.ttf $(PACKAGE_DIR)/usr/share/fonts/gyparody/
+	install -m 644 $(CURDIR)/fonts/scakorinnabold.ttf $(PACKAGE_DIR)/usr/share/fonts/gyparody/
+
+
     # Install executables
 	install -m 755 $(CURDIR)/bin/gyparody $(PACKAGE_DIR)/usr/bin/gyparody
 
