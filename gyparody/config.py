@@ -58,6 +58,8 @@ class Config(object):
         self.fullscreen = False
         self.screen_width = 800
         self.screen_height = 600
+        self.fullscreen_width = 1440
+        self.fullscreen_height = 900
 
         # Background color
         self.background_color = clutter.Color(6, 11, 121)
@@ -79,7 +81,7 @@ class Config(object):
         # Spacing between categories
         self.category_spacing = 10
 
-        self.round_1_data = '/home/brandon/src/gyparody/docs/round1.yaml'
+        self.round_1_data = './docs/round1.yaml'
 
     def load(self):
         config_filename = self._find_config_file()

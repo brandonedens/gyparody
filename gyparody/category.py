@@ -46,10 +46,13 @@ class Category(clutter.Box):
     """
     """
 
-    def __init__(self, category):
+    def __init__(self, model, category, category_number):
         """
         """
         super(Category, self).__init__(clutter.BoxLayout())
+
+        self.model = model
+        self.category_number = category_number
 
         layout = self.get_layout_manager()
         layout.set_spacing(10)
@@ -58,10 +61,14 @@ class Category(clutter.Box):
         self.name = CategoryName(category.keys()[0])
         self.add(self.name)
 
-        answers = category.values()[0]
-        for i in xrange(len(answers)):
-            answer = Answer(answers[i], value=(200 * (i + 1)))
+        answer_defs = category.values()[0]
+        self.answers = []
+        answer_number = 0
+        for i in xrange(len(answer_defs)):
+            answer = Answer(model, answer_defs[i], answer_number, value=(200 * (i + 1)))
             self.add(answer)
+            self.answers.append(answer)
+            answer_number += 1
 
     def set_size(self, width, height):
         """
@@ -73,6 +80,12 @@ class Category(clutter.Box):
         children = self.get_children()
         for child in children:
             child.set_size(width, (height / len(children)) - spacing)
+
+    def set_click_handler(self, click_handler):
+        """
+        """
+        for answer in self.answers:
+            answer.set_click_handler(click_handler)
 
 class CategoryName(clutter.Box):
 

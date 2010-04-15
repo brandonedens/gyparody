@@ -26,10 +26,8 @@
 import clutter
 import logging
 
-from category import Category
 from config import config
-from text import Text
-
+from game_board import GameBoard
 
 ###############################################################################
 ## Constants
@@ -44,18 +42,15 @@ MAIN_STAGE_BACKGROUND_COLOR = clutter.Color(2, 2, 2)
 
 class GameStage(clutter.Stage):
 
-    def __init__(self, round):
+    def __init__(self, model):
         super(GameStage, self).__init__()
+
+        self.model = model
 
         logging.info('Initializing game stage.')
 
         # Hide the mouse cursor on this stage.
-        #self.hide_cursor()
-
-        # Set a default stage size.
-        self.set_fullscreen(False)
-        self.set_size(800, 600)
-        self.set_user_resizable(True)
+        self.hide_cursor()
 
         # Set the stage background to grey.
         self.set_color(MAIN_STAGE_BACKGROUND_COLOR)
@@ -63,21 +58,17 @@ class GameStage(clutter.Stage):
         # Connect callback listeners
         logging.info('Setting up game stage signals.')
         self.connect('fullscreen', self.on_fullscreen)
-        self.connect('unfullscreen', self.on_fullscreen)
+        self.connect('unfullscreen', self.on_unfullscreen)
 
-        self.box = clutter.Box(clutter.BoxLayout())
-        layout = self.box.get_layout_manager()
-        layout.set_vertical(False)
-        spacing = int(self.get_width() * 0.01)
-        layout.set_spacing(spacing)
+        self.game_board = GameBoard(self.model)
 
-        for category in round:
-            category = Category(category)
-            self.box.add(category)
-            category.set_size(self.get_width() / len(round) - spacing,
-                              self.get_height())
+        self.add(self.game_board)
 
-        self.add(self.box)
+        # Set a default stage size.
+        self.set_fullscreen(False)
+        self.set_size(800, 600)
+        self.set_user_resizable(True)
+
         self.show()
 
     def set_size(self, width, height):
@@ -85,16 +76,10 @@ class GameStage(clutter.Stage):
         """
         try:
             super(GameStage, self).set_size(width, height)
-            layout = self.box.get_layout_manager()
-            spacing = int(self.get_width() * 0.01)
-            layout.set_spacing(spacing)
-            children = self.box.get_children()
-            for child in children:
-                child.set_size(self.get_width() / len(children) - spacing,
-                               self.get_height())
+            self.game_board.set_size(width, height)
         except AttributeError:
             # If there is an attribute error then its most likely because
-            # self.box did not exist because the stage is first
+            # self.game_board did not exist because the stage is first
             # loading. Therefore we simply pass on this exception as during
             # loading correctly size of internals will be set.
             pass
@@ -104,5 +89,12 @@ class GameStage(clutter.Stage):
         Signal for when main game stage is fullscreened. This signal resizes
         all contained elements.
         """
-        self.set_size(self.get_width(), self.get_height())
+        self.set_size(config.fullscreen_width, config.fullscreen_height)
+
+    def on_unfullscreen(self, stage):
+        """
+        Signal for when main game stage is un-fullscreened. This signal resizes
+        all contained elements.
+        """
+        self.set_size(config.screen_width, config.screen_height)
 

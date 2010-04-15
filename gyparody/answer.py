@@ -54,7 +54,7 @@ class Answer(clutter.Box):
     """
     """
 
-    def __init__(self, answer, value):
+    def __init__(self, model, answer, answer_number, value):
         """
         """
         super(Answer, self).__init__(
@@ -62,10 +62,32 @@ class Answer(clutter.Box):
                               clutter.BIN_ALIGNMENT_CENTER))
         self.set_color(config.square_background_color)
 
+        self.model = model
         self.answer = answer['answer']
         self.question = answer['question']
+        self.answer_number = answer_number
+        self.value = value
 
         self.text = Text(config.answer_value_font, "$%s" % value)
         self.text.set_color(VALUE_FONT_COLOR)
         self.add(self.text)
+
+        self.model.connect('update-model', self.update)
+
+    def get_answer_numbers(self):
+        """
+        """
+        return (self.get_parent().category_number, self.answer_number)
+
+    def set_click_handler(self, click_handler):
+        """
+        """
+        self.set_reactive(True)
+        self.connect('button-release-event', lambda actor, event: click_handler(self))
+
+    def update(self, model):
+        if self.model.is_answer_selected(self.get_answer_numbers()):
+            self.text.hide()
+        else:
+            self.text.show()
 

@@ -29,7 +29,9 @@ import logging
 import yaml
 
 from config import config
+from game_board import GameBoard
 from game_stage import GameStage
+from model import Model
 
 
 ###############################################################################
@@ -57,8 +59,11 @@ class Game(clutter.Stage):
         self.mode = "round1"
         self.players = []
 
+        self.model = Model()
+        self.model.round = self.load_round()
+
         # Setup the game stage.
-        self.game_stage = GameStage(self.load_round())
+        self.game_stage = GameStage(self.model)
 
         # Setup the admin screen.
         self.connect('destroy', clutter.main_quit)
@@ -84,6 +89,16 @@ class Game(clutter.Stage):
         player_label = clutter.Text('', 'player3: ')
         player_label.set_color(clutter.Color(250, 250, 250))
         self.player_setup.add(player_label)
+
+        self.admin_game_board = GameBoard(self.model)
+        self.admin_game_board.set_size(800, 600)
+        self.admin_game_board.set_scale(0.5, 0.5)
+        self.player_setup.add(self.admin_game_board)
+        def foo(x):
+            print x.get_answer_numbers()
+            self.model.select_answer(x.get_answer_numbers())
+        self.admin_game_board.set_click_handler(foo)
+
         self.show()
 
     def on_press(self, actor, event):
