@@ -1,0 +1,20 @@
+
+Pin 2  - Player 1 switch
+Pin 3  - Player 1 LED
+Pin 4  - Player 2 switch
+Pin 5  - Player 2 LED
+Pin 6  - Player 3 switch
+Pin 7  - Player 3 LED
+
+Pin 11  - Player 1 Panel LED
+Pin 12 - Player 2 Panel LED
+Pin 13 - Player 3 Panel LED
+
+
+Pin 14  - Countdown Green
+Pin 15  - Countdown Yellow
+Pin 16 - Countdown Red
+
+Pin 13 - Piezo Buzzer
+
+
