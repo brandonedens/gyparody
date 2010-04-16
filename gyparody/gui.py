@@ -1,6 +1,5 @@
-#!/usr/bin/python
 # Brandon Edens
-# 2010-04-11
+# 2010-04-16
 # Copyright (C) 2010 Brandon Edens <brandon@as220.org>
 #
 # This file is part of gyparody.
@@ -25,47 +24,54 @@
 ###############################################################################
 
 import clutter
-import gobject
 import logging
 
-from gyparody.config import config
-from gyparody.gui import GUI
+from game import game
+from game_board import GameBoard
+from game_stage import GameStage
 
 
 ###############################################################################
-## Functions
+## Constants
 ###############################################################################
 
-def main():
+
+###############################################################################
+## Classes
+###############################################################################
+
+class GUI(clutter.Stage):
     """
     """
-    # Startup the logging system.
-    # Setup logging for audio interface.
-    logging.basicConfig(filename=config.log_filename,
-                        level=logging.DEBUG,
-                        format=config.log_format)
-    consolehandler = logging.StreamHandler()
-    consolehandler.setLevel( logging.DEBUG )
-    formatter = logging.Formatter(config.log_format)
-    consolehandler.setFormatter(formatter)
-    logging.getLogger( '' ).addHandler( consolehandler )
 
-    gui = GUI()
+    def __init__(self):
+        super(GUI, self).__init__()
 
-    #gobject.timeout_add(50, tick_test)
+        # Setup the game stage.
+        self.game_stage = GameStage()
 
-    clutter.main()
+        # Setup the admin screen.
+        self.connect('destroy', clutter.main_quit)
+        self.connect('key-press-event', self.on_press)
+        self.set_color(clutter.Color(0, 0, 0))
 
-    return 0
+        self.admin_game_board = GameBoard()
+        self.admin_game_board.set_size(800, 600)
+        #self.admin_game_board.set_scale(0.5, 0.5)
+        #self.admin_game_board.set_click_handler(foo)
+        self.add(self.admin_game_board)
 
-def tick_test():
-    print 'tick test.'
-    return True
+        self.show()
 
-###############################################################################
-## Statements
-###############################################################################
-
-if __name__ == '__main__':
-    main()
+    def on_press(self, actor, event):
+        """
+        """
+        if event.keyval == clutter.keysyms.Escape:
+            clutter.main_quit()
+        if event.keyval == clutter.keysyms.f:
+            # Set game stage fullscreen or not.
+            self.game_stage.set_fullscreen(not self.game_stage.get_fullscreen())
+        if event.keyval == clutter.keysyms.s:
+            logging.debug('scaling')
+            self.admin_game_board.set_scale(0.5, 0.5)
 

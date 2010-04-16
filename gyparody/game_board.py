@@ -24,41 +24,139 @@
 ###############################################################################
 
 import clutter
+import gobject
 import logging
 
-from category import Category
+from config import config
+from game import game
+from text import Text
 
 ###############################################################################
 ## Classes
 ###############################################################################
 
-class GameBoard(clutter.Box):
-    def __init__(self, model):
-        super(GameBoard, self).__init__(clutter.BoxLayout())
+class Square(clutter.Box):
 
-        self.model = model
+    def __init__(self, font, text):
+        super(Square, self).__init__(
+            clutter.BinLayout(clutter.BIN_ALIGNMENT_CENTER,
+                              clutter.BIN_ALIGNMENT_CENTER))
+        super(Square, self).set_color(config.square_background_color)
+        self.text = Text(font, text)
+        self.add(self.text)
+
+    def set_color(self, color):
+        """
+        Set the color of the square text.
+        """
+        self.text.set_color(color)
+
+    def set_size(self, width, height):
+        """
+        """
+        super(Square, self).set_size(width, height)
+        self.text.set_size(width, height)
+        layout = self.get_layout_manager()
+        layout.set_alignment(self.text,
+                             clutter.BIN_ALIGNMENT_CENTER,
+                             clutter.BIN_ALIGNMENT_CENTER)
+
+    def set_text(self, font, text):
+        """
+        """
+        logging.debug('called set text.')
+        self.remove(self.text)
+        self.text = Text(font, text)
+        self.text.set_size(self.get_width(), self.get_height())
+        scale_x, scale_y = self.get_scale()
+        print scale_x
+        self.text.set_scale(scale_x, scale_y)
+        self.add(self.text)
+
+class ClueSquare(Square):
+
+    def __init__(self, clue):
+        self.clue = clue
+        if clue.state == 'answered':
+            super(ClueSquare, self).__init__('', '')
+        elif clue.state == 'unanswered':
+            super(ClueSquare, self).__init__(config.clue_value_font, clue)
+            self.set_color(config.clue_value_color)
+        elif clue.state == 'selected':
+            super(ClueSquare, self).__init__(config.clue_font, clue)
+            self.set_color(clutter.Color(255, 255, 255))
+
+        self.set_reactive(True)
+        self.connect('button-release-event', self.on_click)
+        self.connect('paint', self.on_paint)
+
+    def on_paint(self, actor):
+        logging.debug("Entered clue square on_paint.")
+        if self.clue.state == 'unanswered':
+            self.set_text(config.clue_value_font, self.clue.get_value())
+            self.set_color(config.clue_value_color)
+        elif self.clue.state == 'selected':
+            self.set_text(config.clue_font, self.clue.answer)
+        elif self.clue.state == 'question':
+            self.set_text(config.clue_font, self.clue.question)
+        elif self.clue.state == 'answered':
+            self.set_text(config.clue_font, '')
+
+    def on_click(self, actor, event):
+        """
+        """
+        logging.debug("Clue square click! state = %s" % self.clue.state)
+        if self.clue.state == 'unanswered':
+            self.clue.state = 'selected'
+            logging.debug("Clue answer = %s" % self.clue.get_answer())
+            self.set_text(config.clue_font, self.clue.get_answer())
+
+class CategoryColumn(clutter.Box):
+
+    def __init__(self, category):
+        super(CategoryColumn, self).__init__(clutter.BoxLayout())
+        self.category = category
+
+        layout = self.get_layout_manager()
+        layout.set_vertical(True)
+        spacing = int(self.get_width() * 0.01)
+        layout.set_spacing(spacing)
+
+        name_square = Square(config.category_font, category.get_name())
+        self.add(name_square)
+
+        for clue in category.get_clues():
+            clue_square = ClueSquare(clue)
+            self.add(clue_square)
+
+    def set_size(self, width, height):
+        """
+        """
+        super(CategoryColumn, self).set_size(width, height)
+        spacing = int(height * 0.01)
+        layout = self.get_layout_manager()
+        layout.set_spacing(spacing)
+        children = self.get_children()
+        for child in children:
+            child.set_size(width, (height / len(children)) - spacing)
+
+class GameBoard(clutter.Box):
+    def __init__(self):
+        super(GameBoard, self).__init__(clutter.BoxLayout())
 
         layout = self.get_layout_manager()
         layout.set_vertical(False)
         spacing = int(self.get_width() * 0.01)
         layout.set_spacing(spacing)
 
-        self.categories = []
-        category_number = 0
-        round = self.model.get_round()
-        for category in round:
-            category = Category(model, category, category_number)
-            self.add(category)
-            category.set_size(self.get_width() / len(round) - spacing,
-                              self.get_height())
-            self.categories.append(category)
-            category_number += 1
-
-    def set_click_handler(self, click_handler):
-        """
-        """
-        for category in self.categories:
-            category.set_click_handler(click_handler)
+        categories = game.get_categories()
+        for category in categories:
+            category_column = CategoryColumn(category)
+            category_column.set_size(
+                self.get_width() / len(categories) - spacing,
+                self.get_height()
+                )
+            self.add(category_column)
 
     def set_size(self, width, height):
         """
@@ -78,3 +176,4 @@ class GameBoard(clutter.Box):
             # loading. Therefore we simply pass on this exception as during
             # loading correctly size of internals will be set.
             pass
+

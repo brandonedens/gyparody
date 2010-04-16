@@ -29,6 +29,7 @@ import logging
 from config import config
 from game_board import GameBoard
 
+
 ###############################################################################
 ## Constants
 ###############################################################################
@@ -42,15 +43,13 @@ MAIN_STAGE_BACKGROUND_COLOR = clutter.Color(2, 2, 2)
 
 class GameStage(clutter.Stage):
 
-    def __init__(self, model):
+    def __init__(self):
         super(GameStage, self).__init__()
-
-        self.model = model
 
         logging.info('Initializing game stage.')
 
         # Hide the mouse cursor on this stage.
-        self.hide_cursor()
+        #self.hide_cursor()
 
         # Set the stage background to grey.
         self.set_color(MAIN_STAGE_BACKGROUND_COLOR)
@@ -60,7 +59,7 @@ class GameStage(clutter.Stage):
         self.connect('fullscreen', self.on_fullscreen)
         self.connect('unfullscreen', self.on_unfullscreen)
 
-        self.game_board = GameBoard(self.model)
+        self.game_board = GameBoard()
 
         self.add(self.game_board)
 

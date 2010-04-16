@@ -29,9 +29,14 @@ import logging
 import yaml
 
 from config import config
-from game_board import GameBoard
-from game_stage import GameStage
-from model import Model
+
+
+###############################################################################
+## Constants
+###############################################################################
+
+# Global variable that tracks if we're in round1, round2, or final jeopardy.
+GAME_STATE = 'round1'
 
 
 ###############################################################################
@@ -39,93 +44,188 @@ from model import Model
 ###############################################################################
 
 class Player(object):
-    def __init__(self, name):
+
+    def __init__(self, name, score=0):
         """
         Create a player with the given name.
         """
         self.name = name
+        self.score = score
 
-        self.score = 0
+    def marshall(self):
+        """
+        """
+        data = {}
+        data['name'] = self.name
+        data['score'] = self.score
+        return data
 
-class Game(clutter.Stage):
+class Clue(object):
+
+    def __init__(self, answer, question, value, state='unanswered'):
+        """
+        """
+        # Answer state is one of:
+        # unanswered, answered, selected, question
+        self.state = state
+        self.value = value
+        self.answer = answer
+        self.question = question
+
+    def __str__(self):
+        """
+        """
+        if self.state == 'answered':
+            return ""
+        elif self.state == 'unanswered':
+            return "$%d" % self.value
+        elif self.state == 'selected':
+            return self.answer
+        elif self.state == 'question':
+            return self.question
+
+    def get_value(self):
+        """
+        Get the value of this clue.
+        """
+        return "$%d" % self.value
+
+    def get_answer(self):
+        """
+        Getting the clue answer.
+        """
+        return self.answer
+
+    def marshall(self):
+        """
+        """
+        data = {}
+        data['state'] = self.state
+        data['value'] = self.value
+        data['answer'] = self.answer
+        data['question'] = self.question
+        return data
+
+class Category(object):
+
+    def __init__(self, name, category_data):
+        """
+        """
+        self.clues = []
+        self.name = name
+        for i in xrange(len(category_data)):
+            clue_data = category_data[i]
+            if GAME_STATE == 'round1':
+                clue = Clue(clue_data['answer'],
+                            clue_data['question'],
+                            (200 * (i + 1)))
+            elif GAME_STATE == 'round2':
+                clue = Clue(clue_data['answer'],
+                                clue_data['question'],
+                                (400 * (i + 1)))
+            self.clues.append(clue)
+
+    def __str__(self):
+        """
+        """
+        text = "%s\n" % self.name
+        for clue in self.clues:
+            text += "%s\n" % clue
+        return text
+
+    def get_name(self):
+        return self.name
+
+    def get_clues(self):
+        return self.clues
+
+    def marshall(self):
+        """
+        """
+        data = {}
+        clue_list = []
+        for clue in self.clues:
+            clue_list.append(clue.marshall())
+        data[self.name] = clue_list
+        return data
+
+class Game(object):
 
     def __init__(self):
         """
         """
         super(Game, self).__init__()
 
-        logging.info('Initializing game.')
-
-        self.mode = "round1"
         self.players = []
 
-        self.model = Model()
-        self.model.round = self.load_round()
+        round1_file = open(config.round_1_data, 'r')
+        round_data = yaml.load(round1_file)
+        round1_file.close()
 
-        # Setup the game stage.
-        self.game_stage = GameStage(self.model)
-
-        # Setup the admin screen.
-        self.connect('destroy', clutter.main_quit)
-        self.connect('key-press-event', self.on_press)
-        self.set_color(clutter.Color(0, 0, 0))
-
-        # Draw administrative controls
-        # Setup player name input box
-        self.player_setup = clutter.Box(clutter.BoxLayout())
-        self.add(self.player_setup)
-        layout = self.player_setup.get_layout_manager()
-        layout.set_vertical(True)
-        player_label = clutter.Text('', 'player1: ')
-        player_label.set_color(clutter.Color(250, 250, 250))
-        self.player_setup.add(player_label)
-        player1_name = clutter.Text('', 'John Doe')
-        player1_name.set_color(clutter.Color(250, 250, 250))
-        player1_name.set_editable(True)
-        self.player_setup.add(player1_name)
-        player_label = clutter.Text('', 'player2: ')
-        player_label.set_color(clutter.Color(250, 250, 250))
-        self.player_setup.add(player_label)
-        player_label = clutter.Text('', 'player3: ')
-        player_label.set_color(clutter.Color(250, 250, 250))
-        self.player_setup.add(player_label)
-
-        self.admin_game_board = GameBoard(self.model)
-        self.admin_game_board.set_size(800, 600)
-        self.admin_game_board.set_scale(0.5, 0.5)
-        self.player_setup.add(self.admin_game_board)
-        def foo(x):
-            print x.get_answer_numbers()
-            self.model.select_answer(x.get_answer_numbers())
-        self.admin_game_board.set_click_handler(foo)
-
-        self.show()
-
-    def on_press(self, actor, event):
-        """
-        """
-        if event.keyval == clutter.keysyms.Escape:
-            clutter.main_quit()
-        if event.keyval == clutter.keysyms.f:
-            # Set game stage fullscreen or not.
-            self.game_stage.set_fullscreen(not self.game_stage.get_fullscreen())
+        self.categories = []
+        for category_data in round_data:
+            name = category_data.keys()[0]
+            data = category_data[name]
+            self.categories.append(
+                Category(name, data))
 
     def add_player(self, name):
         self.players.append(Player(name))
 
-    def load_round(self):
+    def save(self):
+        """
+        Save the current state of the game to disk.
+        """
+        fh = open(config.save_filename, 'w')
+        yaml.dump(self.marshall(), fh)
+        fh.close()
+
+    def marshall(self):
+        """
+        Convert game into basic python data for saving.
+        """
+        data = {}
+        data['mode'] = self.mode
+        player_data = []
+        for player in self.players:
+            player_data.append(player.marshall())
+        data['players'] = player_data
+        tmp = []
+        for category in self.categories:
+            tmp.append(category.mashall())
+        data['round'] = tmp
+        return data
+
+    def unmarshall(self, data):
         """
         """
-        round1_file = open(config.round_1_data, 'r')
-        round1 = yaml.load(round1_file)
-        round1_file.close()
-        return round1
+        GAME_MODE = data['mode']
+        self.players = []
+        for player_data in data['players']:
+            self.players.append(Player(player_data['name'],
+                                       player_data['score']))
+
+        self.round = Round(data['round'])
+
+    def load(self, filename):
+        """
+        Load the game from the given filename.
+        """
+        fh = open(filename, 'r')
+        data = yaml.load(fh)
+        fh.close()
+        self.unmarshall(data)
+
+    def get_categories(self):
+        """
+        Return the round's categories.
+        """
+        return self.categories
 
 
 ###############################################################################
-## Functions
+## Statements
 ###############################################################################
 
-
-
+game = Game()
 

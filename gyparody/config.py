@@ -54,6 +54,9 @@ class Config(object):
         self.log_filename = '/var/tmp/gyparody.log'
         self.log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
+        # Save file location
+        self.save_filename = '/tmp/gyparody_save.yaml'
+
         # Screen setup options
         self.fullscreen = False
         self.screen_width = 800
@@ -70,13 +73,10 @@ class Config(object):
         # Category settings
         self.category_font = "Haettenschweiler 18"
 
-        # Answer settings
-        self.answer_font = "ScaKorinna 18"
-        self.answer_value_font = "ScaKorinna 20"
-
-        # Answer value font
-        self.value_color = clutter.Color(217, 161, 71)
-        self.answer_font = "ScaKorinna 20"
+        # Clue settings
+        self.clue_font = "ScaKorinna 10"
+        self.clue_value_font = "ScaKorinna 20"
+        self.clue_value_color = clutter.Color(217, 161, 71)
 
         # Spacing between categories
         self.category_spacing = 10
