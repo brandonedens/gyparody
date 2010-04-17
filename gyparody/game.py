@@ -222,6 +222,15 @@ class Game(object):
         """
         return self.categories
 
+    def get_category_names(self):
+        """
+        Return a list of the category names.
+        """
+        names = []
+        for category in self.categories:
+            names.append(category.get_name())
+        return names
+
 
 ###############################################################################
 ## Statements
