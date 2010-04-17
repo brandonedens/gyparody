@@ -61,8 +61,8 @@ class Config(object):
         self.fullscreen = False
         self.screen_width = 800
         self.screen_height = 600
-        self.fullscreen_width = 1440
-        self.fullscreen_height = 900
+        self.fullscreen_width = 1366
+        self.fullscreen_height = 768
 
         # Background color
         self.background_color = clutter.Color(6, 11, 121)
