@@ -180,7 +180,11 @@ class GUI(clutter.Stage):
             else:
                 self.category_overlay.set_size(self.get_width() * 5,
                                                self.get_height())
+                self.category_overlay.set_x(self.get_width())
                 self.add(self.category_overlay)
+                self.category_overlay.animate(clutter.LINEAR,
+                                              500,
+                                              'x', self.category_overlay.get_x() - self.get_width())
         elif event.keyval == clutter.keysyms.f:
             # Fullscreen play area.
             self.set_fullscreen(not self.get_fullscreen())
