@@ -68,7 +68,6 @@ class Square(clutter.Box):
         self.text = Text(font, text)
         self.text.set_size(self.get_width(), self.get_height())
         scale_x, scale_y = self.get_scale()
-        print scale_x
         self.text.set_scale(scale_x, scale_y)
         self.add(self.text)
 
