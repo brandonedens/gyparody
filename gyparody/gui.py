@@ -72,16 +72,12 @@ class CategoryOverlay(clutter.Box):
     def set_size(self, width, height):
         """
         Set the size of the category overlay which should be large enough for
-        all of the categories. Meaning that width will be 5 times the width of
-        the screen so that category information can be scrolled in from the right.
+        all of the 5 categories. However, the width specified here will be the
+        screen size width.
         """
-        super(CategoryOverlay, self).set_size(width, height)
-        width_one_box = width / 5
+        super(CategoryOverlay, self).set_size(width * 5, height)
         for child in self.get_children():
-            child.set_size(width_one_box, height)
-            #self.box.set_size(width_one_box, height)
-            #self.rect.set_size(width_one_box, height)
-            #self.text.set_size(width_one_box, height)
+            child.set_size(width, height)
 
     def set_text(self, text):
         """
@@ -110,12 +106,30 @@ class ClueOverlay(clutter.Box):
         """
         self.remove(self.text)
         self.text = Text(config.clue_overlay_font, text)
-        #self.text.set_size(self.get_width(), self.get_height())
-        #self.text.set_scale(scale_x, scale_y)
         self.add(self.text)
 
-
 clue_overlay = ClueOverlay()
+
+class PlayerBuzzOverlay(clutter.Box):
+    """
+    An overlay for player buzz in information.
+    """
+
+    def __init__(self):
+        """
+        """
+        super(PlayerBuzzOverlay, self).__init__(clutter.BinLayout(
+            clutter.BIN_ALIGNMENT_CENTER,
+            clutter.BIN_ALIGNMENT_CENTER))
+        self.set_color(config.square_background_color)
+        self.text = Text('', '')
+
+    def set_text(self, text):
+        """
+        """
+        self.remove(self.text)
+        self.text = Text(config.player_overlay_font, text)
+        self.add(self.text)
 
 
 class GUI(clutter.Stage):
@@ -145,9 +159,17 @@ class GUI(clutter.Stage):
         self.clue_overlay = clue_overlay
         self.add(self.clue_overlay)
 
+        # Overlay box for display category information.
         self.category_overlay = CategoryOverlay()
-        self.category_overlay.set_height(self.get_height())
-        self.category_overlay.set_width(self.get_width() * 5)
+        self.category_overlay.set_size(self.get_width(),
+                                       self.get_height())
+
+        # Overlay box for displaying which player buzzed in.
+        self.player_buzz_overlay = PlayerBuzzOverlay()
+        self.player_buzz_overlay.set_size(self.get_width(),
+                                          self.get_height())
+        self.player_buzz_overlay.set_opacity(0)
+        self.add(self.player_buzz_overlay)
 
         # Set a default stage size.
         self.set_fullscreen(False)
@@ -172,13 +194,25 @@ class GUI(clutter.Stage):
         """
         if event.keyval == clutter.keysyms.Escape:
             clutter.main_quit()
+        elif event.keyval == clutter.keysyms.a:
+            self.player_buzz_overlay.set_opacity(255)
+            self.player_buzz_overlay.set_text('Brandon')
+            self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             1000,
+                                             'opacity', 0)
+        elif event.keyval == clutter.keysyms.b:
+            self.player_buzz_overlay.set_opacity(255)
+            self.player_buzz_overlay.set_text('Paolo')
+            self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             1000,
+                                             'opacity', 0)
         elif event.keyval == clutter.keysyms.c:
             if self.category_overlay in self.get_children():
                 self.category_overlay.animate(clutter.LINEAR,
                                               500,
                                               'x', self.category_overlay.get_x() - self.get_width())
             else:
-                self.category_overlay.set_size(self.get_width() * 5,
+                self.category_overlay.set_size(self.get_width(),
                                                self.get_height())
                 self.category_overlay.set_x(self.get_width())
                 self.add(self.category_overlay)
@@ -200,6 +234,8 @@ class GUI(clutter.Stage):
         try:
             super(GUI, self).set_size(width, height)
             self.game_board.set_size(width, height)
+            self.category_overlay.set_size(width, height)
+            self.player_buzz_overlay.set_size(width, height)
         except AttributeError:
             # If there is an attribute error then its most likely because
             # self.game_board did not exist because the stage is first
