@@ -80,6 +80,7 @@ class Config(object):
 
         # Clue overlay font
         self.clue_overlay_font = "ScaKorinna 48"
+        self.category_overlay_font = "ScaKorinna 48"
 
         # Spacing between categories
         self.category_spacing = 10
