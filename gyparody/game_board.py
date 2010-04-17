@@ -64,7 +64,6 @@ class Square(clutter.Box):
     def set_text(self, font, text):
         """
         """
-        logging.debug('called set text.')
         self.remove(self.text)
         self.text = Text(font, text)
         self.text.set_size(self.get_width(), self.get_height())
@@ -91,7 +90,6 @@ class ClueSquare(Square):
         self.connect('paint', self.on_paint)
 
     def on_paint(self, actor):
-        logging.debug("Entered clue square on_paint.")
         if self.clue.state == 'unanswered':
             self.set_text(config.clue_value_font, self.clue.get_value())
             self.set_color(config.clue_value_color)
