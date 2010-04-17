@@ -64,6 +64,14 @@ class GUI(clutter.Stage):
         self.game_board = GameBoard()
         self.add(self.game_board)
 
+        # Overly box for displaying clue information and answers
+        self.overlay_clue = clutter.Box(clutter.BinLayout(
+            clutter.BIN_ALIGNMENT_CENTER,
+            clutter.BIN_ALIGNMENT_CENTER))
+        self.overlay_clue.set_size(300, 300)
+        self.overlay_clue.set_color(config.square_background_color)
+        self.add(self.overlay_clue)
+
         # Set a default stage size.
         self.set_fullscreen(False)
         self.set_size(800, 600)
@@ -76,9 +84,14 @@ class GUI(clutter.Stage):
         """
         if event.keyval == clutter.keysyms.Escape:
             clutter.main_quit()
-        if event.keyval == clutter.keysyms.f:
+        elif event.keyval == clutter.keysyms.f:
             # Fullscreen play area.
             self.set_fullscreen(not self.get_fullscreen())
+        elif event.keyval == clutter.keysyms.t:
+            self.overlay_clue.animate(clutter.LINEAR,
+                                      500,
+                                      'width', self.get_width(),
+                                      'height', self.get_height())
 
     def set_size(self, width, height):
         """
