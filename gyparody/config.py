@@ -78,6 +78,9 @@ class Config(object):
         self.clue_value_font = "ScaKorinna 20"
         self.clue_value_color = clutter.Color(217, 161, 71)
 
+        # Clue overlay font
+        self.clue_overlay_font = "ScaKorinna 48"
+
         # Spacing between categories
         self.category_spacing = 10
 
