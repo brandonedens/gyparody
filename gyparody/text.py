@@ -107,5 +107,7 @@ class Text(clutter.Box):
         """
         """
         self.text.set_font_name(font)
+        self.shadow.set_font_name(font)
         self.text.set_text(text)
+        self.shadow.set_text(text)
 
