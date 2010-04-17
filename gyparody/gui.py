@@ -44,6 +44,52 @@ MAIN_STAGE_BACKGROUND_COLOR = clutter.Color(2, 2, 2)
 ## Classes
 ###############################################################################
 
+class CategoryOverlay(clutter.Box):
+    """
+    An overlay that displays category information.
+    """
+
+    def __init__(self):
+        """
+        """
+        super(CategoryOverlay, self).__init__(clutter.BoxLayout())
+        layout = self.get_layout_manager()
+        layout.set_vertical(False)
+        self.set_color(config.background_color)
+
+        self.boxes = []
+        for category_name in game.get_category_names():
+            box = clutter.Box(clutter.BinLayout(
+                clutter.BIN_ALIGNMENT_CENTER,
+                clutter.BIN_ALIGNMENT_CENTER))
+            rect = clutter.Rectangle()
+            rect.set_color(config.square_background_color)
+            box.add(rect)
+            text = Text(config.category_overlay_font, category_name)
+            box.add(text)
+            self.add(box)
+
+    def set_size(self, width, height):
+        """
+        Set the size of the category overlay which should be large enough for
+        all of the categories. Meaning that width will be 5 times the width of
+        the screen so that category information can be scrolled in from the right.
+        """
+        super(CategoryOverlay, self).set_size(width, height)
+        width_one_box = width / 5
+        for child in self.get_children():
+            child.set_size(width_one_box, height)
+            #self.box.set_size(width_one_box, height)
+            #self.rect.set_size(width_one_box, height)
+            #self.text.set_size(width_one_box, height)
+
+    def set_text(self, text):
+        """
+        """
+        self.box.remove(self.text)
+        self.text = Text(config.category_overlay_font, text)
+        self.box.add(self.text)
+
 class ClueOverlay(clutter.Box):
     """
     An overlay for clue information.
@@ -99,6 +145,10 @@ class GUI(clutter.Stage):
         self.clue_overlay = clue_overlay
         self.add(self.clue_overlay)
 
+        self.category_overlay = CategoryOverlay()
+        self.category_overlay.set_height(self.get_height())
+        self.category_overlay.set_width(self.get_width() * 5)
+
         # Set a default stage size.
         self.set_fullscreen(False)
         self.set_size(800, 600)
@@ -122,6 +172,15 @@ class GUI(clutter.Stage):
         """
         if event.keyval == clutter.keysyms.Escape:
             clutter.main_quit()
+        elif event.keyval == clutter.keysyms.c:
+            if self.category_overlay in self.get_children():
+                self.category_overlay.animate(clutter.LINEAR,
+                                              500,
+                                              'x', self.category_overlay.get_x() - self.get_width())
+            else:
+                self.category_overlay.set_size(self.get_width() * 5,
+                                               self.get_height())
+                self.add(self.category_overlay)
         elif event.keyval == clutter.keysyms.f:
             # Fullscreen play area.
             self.set_fullscreen(not self.get_fullscreen())
