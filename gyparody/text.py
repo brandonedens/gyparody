@@ -98,6 +98,10 @@ class Text(clutter.Box):
         """
         """
         super(Text, self).set_width(width)
+        self.text.set_width(self.get_width())
+        self.shadow.set_width(self.get_width())
+        offset = int(self.font_size() / 24) + 2
+        self.shadow.set_position(offset, offset)
 
     def set_text(self, font, text):
         """
