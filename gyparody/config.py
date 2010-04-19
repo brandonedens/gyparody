@@ -57,6 +57,11 @@ class Config(object):
         # Save file location
         self.save_filename = '/tmp/gyparody_save.yaml'
 
+        # Audio filenames
+        self.sound_daily_double = 'sounds/daily_double.wav'
+        self.sound_final_music = 'sounds/final_gyparody_music.wav'
+        self.sound_timeout = 'sounds/timeout.wav'
+
         # Timeouts
         self.await_answer_timeout = 5
         self.await_buzz_timeout = 5

@@ -24,6 +24,7 @@
 ###############################################################################
 
 import clutter
+import cluttergst
 import logging
 
 from config import config
@@ -313,6 +314,9 @@ class GUI(clutter.Stage):
         """
         if game.check_timeout_beep():
             logging.debug("****************** BZZZZZT! ******************")
+            tex = cluttergst.VideoTexture()
+            tex.set_filename(config.sound_timeout)
+            tex.set_playing(True)
         if game.check_flash_player_name():
             player_name = game.players[game.buzzed_player].name
             self.player_buzz_overlay.set_opacity(255)
