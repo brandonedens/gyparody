@@ -57,6 +57,9 @@ class Config(object):
         # Save file location
         self.save_filename = '/tmp/gyparody_save.yaml'
 
+        # Timeouts
+        self.await_answer_timeout = 5
+
         # Screen setup options
         self.fullscreen = False
         self.screen_width = 800
@@ -82,7 +85,6 @@ class Config(object):
         self.clue_overlay_font = "ScaKorinna 48"
         self.category_overlay_font = "ScaKorinna 48"
         self.player_overlay_font = "ScaKorinna 48"
-
 
         # Spacing between categories
         self.category_spacing = 10

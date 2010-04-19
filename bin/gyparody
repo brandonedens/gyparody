@@ -52,7 +52,7 @@ def main():
 
     gui = GUI()
 
-    #gobject.timeout_add(50, tick_test)
+    gobject.timeout_add(1000, gui.on_second)
 
     clutter.main()
 

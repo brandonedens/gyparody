@@ -231,6 +231,12 @@ class Game(object):
             names.append(category.get_name())
         return names
 
+    def on_second(self):
+        """
+        Game tick on asecond.
+        """
+        pass
+
 
 ###############################################################################
 ## Statements

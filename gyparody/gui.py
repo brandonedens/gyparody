@@ -195,18 +195,23 @@ class GUI(clutter.Stage):
         if event.keyval == clutter.keysyms.Escape:
             clutter.main_quit()
         elif event.keyval == clutter.keysyms.a:
+            # player A rings in.
             self.player_buzz_overlay.set_opacity(255)
             self.player_buzz_overlay.set_text('Brandon')
             self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
                                              1000,
                                              'opacity', 0)
         elif event.keyval == clutter.keysyms.b:
+            # player B rings in.
             self.player_buzz_overlay.set_opacity(255)
             self.player_buzz_overlay.set_text('Paolo')
             self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
                                              1000,
                                              'opacity', 0)
         elif event.keyval == clutter.keysyms.c:
+            # player C rings in.
+            pass
+        elif event.keyval == clutter.keysyms.l:
             if self.category_overlay in self.get_children():
                 self.category_overlay.animate(clutter.LINEAR,
                                               500,
@@ -256,4 +261,10 @@ class GUI(clutter.Stage):
         all contained elements.
         """
         self.set_size(config.screen_width, config.screen_height)
+
+    def on_second(self):
+        """
+        Call back associated with each second.
+        """
+        game.on_second()
 
