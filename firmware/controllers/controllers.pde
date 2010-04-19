@@ -19,27 +19,27 @@
    ---------------------------------------------------------------------------*/
 
 // Define Buttons and LEDS
-#define BUTTON_1 2
-#define BUTTON_2 4
-#define BUTTON_3 6
+#define BUTTON_1 (2)
+#define BUTTON_2 (4)
+#define BUTTON_3 (6)
 
 // Button LEDs
-#define BUTTON_LED_1 3
-#define BUTTON_LED_2 5
-#define BUTTON_LED_3 7
+#define BUTTON_LED_1 (3)
+#define BUTTON_LED_2 (5)
+#define BUTTON_LED_3 (7)
 
 // Panel Reset Button
-#define BUTTON_PANEL_RESET 8
+#define BUTTON_PANEL_RESET (8)
 
 // Panel LEDs
-#define PANEL_LED_1 11
-#define PANEL_LED_2 12
-#define PANEL_LED_3 13
+#define PANEL_LED_1 (11)
+#define PANEL_LED_2 (12)
+#define PANEL_LED_3 (13)
 
 // Countdown LEDs
-#define GREEN_LED 14
-#define YELLOW_LED 15
-#define RED_LED 16
+#define GREEN_LED (14)
+#define YELLOW_LED (15)
+#define RED_LED (16)
 
 // Uncomment DEBUG to 1 to get debugging output on the Serial connection
 // #define DEBUG
