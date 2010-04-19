@@ -18,6 +18,9 @@
   - defines
    ---------------------------------------------------------------------------*/
 
+// Serial port baud rate
+#define SERIAL_BAUD_RATE (57600)
+
 // Define Buttons and LEDS
 #define BUTTON_1 (2)
 #define BUTTON_2 (4)
@@ -53,12 +56,25 @@
   - globals
    ---------------------------------------------------------------------------*/
 
-// game status variables
+// button states.
+int button_1 = HIGH;
+int button_2 = HIGH;
+int button_3 = HIGH;
+// previous button states.
 int last_button_1 = HIGH;
 int last_button_2 = HIGH;
 int last_button_3 = HIGH;
+
 // serial input ring.
-char ring[SIZE_OF_INPUT_RING] = "     ";
+char ring[SIZE_OF_INPUT_RING];
+
+
+/* ---------------------------------------------------------------------------
+  - local functions
+   ---------------------------------------------------------------------------*/
+static void print_button(int button_value);
+static void send_buttons(void);
+static void handle_reset(void);
 
 
 /* ---------------------------------------------------------------------------
@@ -71,7 +87,7 @@ void setup()
 {
 
    // Initialize serial connection for possible debugging
-   Serial.begin(9600);
+   Serial.begin(SERIAL_BAUD_RATE);
 
    // Initialize buttons
    pinMode(BUTTON_1, INPUT);     // sets pushbutton pins to input
@@ -88,7 +104,7 @@ void setup()
    pinMode(BUTTON_LED_2, OUTPUT);
    pinMode(BUTTON_LED_3, OUTPUT);
    digitalWrite(BUTTON_LED_1, LOW);
-   digitalWrite(BUTTON_LED_3, LOW);
+   digitalWrite(BUTTON_LED_2, LOW);
    digitalWrite(BUTTON_LED_3, LOW);
 
    // Initialize Player Panel LEDs
@@ -102,7 +118,7 @@ void setup()
    // Initialize Timer LEDs
    pinMode(GREEN_LED, OUTPUT);
    pinMode(YELLOW_LED, OUTPUT);
-   pinMode(RED_LED, OUTPUT );
+   pinMode(RED_LED, OUTPUT);
    digitalWrite(GREEN_LED, LOW);
    digitalWrite(YELLOW_LED, LOW);
    digitalWrite(RED_LED, LOW);
@@ -123,33 +139,22 @@ void setup()
    digitalWrite(RED_LED, HIGH);
    delay(250);
    digitalWrite(RED_LED, LOW);
-   delay(250);
 
-#if 0
    // Test Player Panel LEDs
    digitalWrite(PANEL_LED_1, HIGH);
+   digitalWrite(PANEL_LED_2, HIGH);
+   digitalWrite(PANEL_LED_3, HIGH);
+   digitalWrite(BUTTON_LED_1, HIGH);
+   digitalWrite(BUTTON_LED_2, HIGH);
+   digitalWrite(BUTTON_LED_3, HIGH);
+
    delay(250);
    digitalWrite(PANEL_LED_1, LOW);
-   digitalWrite(PANEL_LED_2, HIGH);
-   delay(250);
    digitalWrite(PANEL_LED_2, LOW);
-   digitalWrite(PANEL_LED_3, HIGH);
-   delay(250);
    digitalWrite(PANEL_LED_3, LOW);
-   delay(250);
-
-   // Test Button LEDs
-   digitalWrite(BUTTON_LED_1, HIGH);
-   delay(250);
    digitalWrite(BUTTON_LED_1, LOW);
-   digitalWrite(BUTTON_LED_2, HIGH);
-   delay(250);
    digitalWrite(BUTTON_LED_2, LOW);
-   digitalWrite(BUTTON_LED_3, HIGH);
-   delay(250);
    digitalWrite(BUTTON_LED_3, LOW);
-   delay(250);
-#endif
 
 }
 
@@ -158,36 +163,34 @@ void setup()
    ---------------------------------------------------------------------------*/
 void loop()
 {
-    int button_1 = HIGH;
-    int button_2 = HIGH;
-    int button_3 = HIGH;
-    int send_state = false;
+    int transmit_buttons = false;
 
     /* First check for reset button press. */
-    handle_reset()
+    handle_reset();
 
     // Read the input pins.
     button_1 = digitalRead(BUTTON_1);
-    if (player_1 != last_button_1) {
-        last_button_1 = player_1;
-        send_state = true;
+    if (button_1 != last_button_1) {
+        last_button_1 = button_1;
+        transmit_buttons = true;
     }
 
     button_2 = digitalRead(BUTTON_2);
-    if (player_2 != last_button_2) {
-        last_button_2 = player_2;
-        send_state = true;
+    if (button_2 != last_button_2) {
+        last_button_2 = button_2;
+        transmit_buttons = true;
     }
 
     button_3 = digitalRead(BUTTON_3);
-    if (player_3 != last_button_3) {
-        last_button_3 = player_3;
-        send_state = true;
+    if (button_3 != last_button_3) {
+        last_button_3 = button_3;
+        transmit_buttons = true;
     }
 
     // Transmit those button presses to the computer.
-    if (send_state == true){
+    if (transmit_buttons == true){
         send_buttons();
+        transmit_buttons = false;
     }
 
     // Read incoming button light information from the computer.
@@ -198,7 +201,7 @@ void loop()
             ring[i] = ring[i+1];
         }
         // Store the incoming_byte as the last element in the ring.
-        ring[SIZE_OF_INPUT_RING - 1] = (byte)incoming_byte;
+        ring[SIZE_OF_INPUT_RING - 1] = (char)incoming_byte;
     }
 
     /* Check ring buffer to see we have complete data. */
@@ -228,12 +231,13 @@ void loop()
             digitalWrite(PANEL_LED_3, LOW);
         }
         /* Reset ring buffer so that button lighting is not activated again. */
-        ring[0] = ' ';
-        ring[1] = ' ';
+        for (int i = 0; i < SIZE_OF_INPUT_RING; i++) {
+            ring[i] = ' ';
+        }
     }
 
     /* Do nothing with the other LEDs for the moment. */
-    digitalWrite(GREEN_LED, LOW);
+    digitalWrite(GREEN_LED, HIGH);
     digitalWrite(YELLOW_LED, LOW);
     digitalWrite(RED_LED, LOW);
 }
@@ -249,7 +253,7 @@ void print_button(int button_value)
 }
 
 /** Send all information about buttons. */
-void send_buttons()
+void send_buttons(void)
 {
     Serial.print("GY");
     print_button(button_1);
@@ -257,10 +261,11 @@ void send_buttons()
     print_button(button_3);
 }
 
-int handle_reset() {
+void handle_reset(void) {
     int val = HIGH;
     val = digitalRead(BUTTON_PANEL_RESET); // read the input pin
     if (val == LOW) {
+        digitalWrite(RED_LED, HIGH);
         /* The reset button is pressed. Stop serial receiving and sending. */
         Serial.end();
     }
@@ -268,7 +273,8 @@ int handle_reset() {
         /* What until reset button is depressed. */
         val = digitalRead(BUTTON_PANEL_RESET);
     }
+    digitalWrite(RED_LED, LOW);
     /* Restart normal operation. */
-    Serial.begin(9600);
+    Serial.begin(SERIAL_BAUD_RATE);
 }
 
