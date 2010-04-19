@@ -5,8 +5,18 @@
  *
  --------------------------------------------------------------------------- */
 
+
+/* ---------------------------------------------------------------------------
+  - includes
+   ---------------------------------------------------------------------------*/
+
 #include <stdio.h>
 #include <stdlib.h>
+
+
+/* ---------------------------------------------------------------------------
+  - defines
+   ---------------------------------------------------------------------------*/
 
 // Define Buttons and LEDS
 #define BUTTON_1 2
@@ -35,6 +45,15 @@
 // #define DEBUG
 
 
+/* ---------------------------------------------------------------------------
+  - globals
+   ---------------------------------------------------------------------------*/
+
+// game status variables
+int waitingForAnswer = 0;
+int currentPlayer = 0;
+int timeToAnswer = 20000; // Number of milliseconds players have to answer
+
 
 /* ---------------------------------------------------------------------------
  - setup
@@ -49,38 +68,38 @@ void setup()
    Serial.begin(9600);
 
    // Initialize buttons
-   pinMode(BUTTON_1, INPUT ) ;     // sets pushbutton pins to input
-   digitalWrite(BUTTON_1, HIGH) ;   // set pullup resistor to high
-   pinMode(BUTTON_2, INPUT ) ;     // sets pushbutton pins to input
-   digitalWrite(BUTTON_2, HIGH) ;   // set pullup resistor to high
-   pinMode(BUTTON_3, INPUT ) ;     // sets pushbutton pins to input
-   digitalWrite(BUTTON_3, HIGH) ;   // set pullup resistor to high
-   pinMode(BUTTON_PANEL_RESET, INPUT ) ;     // sets pushbutton pins to input
-   digitalWrite(BUTTON_PANEL_RESET, HIGH) ;   // set pullup resistor to high
+   pinMode(BUTTON_1, INPUT);     // sets pushbutton pins to input
+   digitalWrite(BUTTON_1, HIGH); // set pullup resistor to high
+   pinMode(BUTTON_2, INPUT);     // sets pushbutton pins to input
+   digitalWrite(BUTTON_2, HIGH); // set pullup resistor to high
+   pinMode(BUTTON_3, INPUT);     // sets pushbutton pins to input
+   digitalWrite(BUTTON_3, HIGH); // set pullup resistor to high
+   pinMode(BUTTON_PANEL_RESET, INPUT);     // sets pushbutton pins to input
+   digitalWrite(BUTTON_PANEL_RESET, HIGH); // set pullup resistor to high
 
    // Initialize Button LEDs
-   pinMode(BUTTON_LED_1, OUTPUT ) ;
-   pinMode(BUTTON_LED_2, OUTPUT ) ;
-   pinMode(BUTTON_LED_3, OUTPUT ) ;
-   digitalWrite(BUTTON_LED_1, LOW) ;
-   digitalWrite(BUTTON_LED_3, LOW) ;
-   digitalWrite(BUTTON_LED_3, LOW) ;
+   pinMode(BUTTON_LED_1, OUTPUT);
+   pinMode(BUTTON_LED_2, OUTPUT);
+   pinMode(BUTTON_LED_3, OUTPUT);
+   digitalWrite(BUTTON_LED_1, LOW);
+   digitalWrite(BUTTON_LED_3, LOW);
+   digitalWrite(BUTTON_LED_3, LOW);
 
    // Initialize Player Panel LEDs
-   pinMode(PANEL_LED_1, OUTPUT ) ;
-   pinMode(PANEL_LED_2, OUTPUT ) ;
-   pinMode(PANEL_LED_3, OUTPUT ) ;
-   digitalWrite(PANEL_LED_1, LOW) ;
-   digitalWrite(PANEL_LED_2, LOW) ;
-   digitalWrite(PANEL_LED_3, LOW) ;
+   pinMode(PANEL_LED_1, OUTPUT);
+   pinMode(PANEL_LED_2, OUTPUT);
+   pinMode(PANEL_LED_3, OUTPUT);
+   digitalWrite(PANEL_LED_1, LOW);
+   digitalWrite(PANEL_LED_2, LOW);
+   digitalWrite(PANEL_LED_3, LOW);
 
    // Initialize Timer LEDs
-   pinMode(GREEN_LED, OUTPUT ) ;
-   pinMode(YELLOW_LED, OUTPUT ) ;
-   pinMode(RED_LED, OUTPUT ) ;
-   digitalWrite(GREEN_LED, LOW) ;
-   digitalWrite(YELLOW_LED, LOW) ;
-   digitalWrite(RED_LED, LOW) ;
+   pinMode(GREEN_LED, OUTPUT);
+   pinMode(YELLOW_LED, OUTPUT);
+   pinMode(RED_LED, OUTPUT );
+   digitalWrite(GREEN_LED, LOW);
+   digitalWrite(YELLOW_LED, LOW);
+   digitalWrite(RED_LED, LOW);
 
 #ifdef DEBUG
    Serial.println("Testing LEDs");
@@ -98,8 +117,8 @@ void setup()
    digitalWrite(RED_LED, LOW);
    delay(250);
 
+#if 0
    // Test Player Panel LEDs
-/*
    digitalWrite(PANEL_LED_1, HIGH);
    delay(250);
    digitalWrite(PANEL_LED_1, LOW);
@@ -110,9 +129,8 @@ void setup()
    delay(250);
    digitalWrite(PANEL_LED_3, LOW);
    delay(250);
-*/
+
    // Test Button LEDs
-/*
    digitalWrite(BUTTON_LED_1, HIGH);
    delay(250);
    digitalWrite(BUTTON_LED_1, LOW);
@@ -123,19 +141,9 @@ void setup()
    delay(250);
    digitalWrite(BUTTON_LED_3, LOW);
    delay(250);
-*/
+#endif
 
 }
-
-/* ---------------------------------------------------------------------------
-  - globals
-   ---------------------------------------------------------------------------*/
-
-// game status variables
-int waitingForAnswer = 0;
-int currentPlayer = 0;
-int timeToAnswer = 20000; // Number of milliseconds players have to answer
-
 
 /* ---------------------------------------------------------------------------
  - loop - main loop. will document more later, if need be
@@ -148,17 +156,23 @@ void loop()
    val = digitalRead(BUTTON_1);   // read the input pin
    digitalWrite(BUTTON_LED_1, !val);    // sets the LED to the button's value
    digitalWrite(PANEL_LED_1, !val);    // sets the LED to the button's value
-   if (val == LOW) waitForAnswer(1);
+   if (val == LOW) {
+       waitForAnswer(1);
+   }
 
    val = digitalRead(BUTTON_2);   // read the input pin
    digitalWrite(BUTTON_LED_2, !val);    // sets the LED to the button's value
    digitalWrite(PANEL_LED_2, !val);    // sets the LED to the button's value
-   if (val == LOW) waitForAnswer(2);
+   if (val == LOW) {
+       waitForAnswer(2);
+   }
 
    val = digitalRead(BUTTON_3);   // read the input pin
    digitalWrite(BUTTON_LED_3, !val);    // sets the LED to the button's value
    digitalWrite(PANEL_LED_3, !val);    // sets the LED to the button's value
-   if (val == LOW) waitForAnswer(3);
+   if (val == LOW) {
+       waitForAnswer(3);
+   }
 
    digitalWrite(GREEN_LED, LOW);
    digitalWrite(YELLOW_LED, LOW);
@@ -178,75 +192,90 @@ void waitForAnswer(int player) {
    Serial.println(" Answering");
 
    // Blink green for 1/3 of timeToAnswer
-   #ifdef DEBUG
+#ifdef DEBUG
    Serial.println("Blinking Green");
-   #endif
+#endif
    i = timeToAnswer / 3;
    while(i > 0) {
-      #ifdef DEBUG
+#ifdef DEBUG
       Serial.println(i);
-      #endif
-      if (checkForReset() == LOW) return;
+#endif
+      if (checkForReset() == LOW) {
+          return;
+      }
       digitalWrite(GREEN_LED, HIGH);
       delay(blinkInterval);
-      if (checkForReset() == LOW) return;
+      if (checkForReset() == LOW) {
+          return;
+      }
       i = i - blinkInterval;
       digitalWrite(GREEN_LED, LOW);
       delay(blinkInterval);
-      if (checkForReset() == LOW) return;
+      if (checkForReset() == LOW) {
+          return;
+      }
       i = i - blinkInterval;
    }
 
    // Blink yellow for 1/3 of timeToAnswer
-   #ifdef DEBUG
+#ifdef DEBUG
    Serial.println("Blinking Yellow");
-   #endif
+#endif
    i = timeToAnswer / 3;
-   while(i > 0) {
-      #ifdef DEBUG
+   while (i > 0) {
+#ifdef DEBUG
       Serial.println(i);
-      #endif
-      if (checkForReset() == LOW) return;
+#endif
+      if (checkForReset() == LOW) {
+          return;
+      }
       digitalWrite(YELLOW_LED, HIGH);
       delay(blinkInterval);
-      if (checkForReset() == LOW) return;
+      if (checkForReset() == LOW) {
+          return;
+      }
       i = i - blinkInterval;
       digitalWrite(YELLOW_LED, LOW);
       delay(blinkInterval);
-      if (checkForReset() == LOW) return;
+      if (checkForReset() == LOW) {
+          return;
+      }
       i = i - blinkInterval;
    }
 
 
    // Blink yellow for 1/3 of timeToAnswer
-   #ifdef DEBUG
+#ifdef DEBUG
    Serial.println("Blinking Red");
-   #endif
+#endif
 
    i = timeToAnswer / 3;
-   while(i > 0) {
-      #ifdef DEBUG
+   while (i > 0) {
+#ifdef DEBUG
       Serial.println(i);
-      #endif
-      if (checkForReset() == LOW) return;
+#endif
+      if (checkForReset() == LOW) {
+          return;
+      }
       digitalWrite(RED_LED, HIGH);
       delay(blinkInterval);
-      if (checkForReset() == LOW) return;
+      if (checkForReset() == LOW) {
+          return;
+      }
       i = i - blinkInterval;
       digitalWrite(RED_LED, LOW);
       delay(blinkInterval);
-      if (checkForReset() == LOW) return;
+      if (checkForReset() == LOW) {
+          return;
+      }
       i = i - blinkInterval;
    }
 
 }
 
 int checkForReset() {
-
-   int val = HIGH;
-   val = digitalRead(BUTTON_PANEL_RESET);   // read the input pin
-   return val;
-
-
+    int val = HIGH;
+    val = digitalRead(BUTTON_PANEL_RESET); // read the input pin
+    return val;
 }
 
