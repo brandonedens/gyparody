@@ -41,6 +41,10 @@
 #define YELLOW_LED (15)
 #define RED_LED (16)
 
+
+// Input buffer ring size.
+#define SIZE_OF_INPUT_RING (5)
+
 // Uncomment DEBUG to 1 to get debugging output on the Serial connection
 // #define DEBUG
 
@@ -50,9 +54,11 @@
    ---------------------------------------------------------------------------*/
 
 // game status variables
-int waitingForAnswer = 0;
-int currentPlayer = 0;
-int timeToAnswer = 20000; // Number of milliseconds players have to answer
+int last_button_1 = HIGH;
+int last_button_2 = HIGH;
+int last_button_3 = HIGH;
+// serial input ring.
+char ring[SIZE_OF_INPUT_RING] = "     ";
 
 
 /* ---------------------------------------------------------------------------
@@ -105,6 +111,8 @@ void setup()
    Serial.println("Testing LEDs");
 #endif
 
+   // Power on SELF TEST
+
    // Test Timer LEDs
    digitalWrite(GREEN_LED, HIGH);
    delay(250);
@@ -150,132 +158,117 @@ void setup()
    ---------------------------------------------------------------------------*/
 void loop()
 {
+    int button_1 = HIGH;
+    int button_2 = HIGH;
+    int button_3 = HIGH;
+    int send_state = false;
 
-   int val = HIGH;
+    /* First check for reset button press. */
+    handle_reset()
 
-   val = digitalRead(BUTTON_1);   // read the input pin
-   digitalWrite(BUTTON_LED_1, !val);    // sets the LED to the button's value
-   digitalWrite(PANEL_LED_1, !val);    // sets the LED to the button's value
-   if (val == LOW) {
-       waitForAnswer(1);
-   }
+    // Read the input pins.
+    button_1 = digitalRead(BUTTON_1);
+    if (player_1 != last_button_1) {
+        last_button_1 = player_1;
+        send_state = true;
+    }
 
-   val = digitalRead(BUTTON_2);   // read the input pin
-   digitalWrite(BUTTON_LED_2, !val);    // sets the LED to the button's value
-   digitalWrite(PANEL_LED_2, !val);    // sets the LED to the button's value
-   if (val == LOW) {
-       waitForAnswer(2);
-   }
+    button_2 = digitalRead(BUTTON_2);
+    if (player_2 != last_button_2) {
+        last_button_2 = player_2;
+        send_state = true;
+    }
 
-   val = digitalRead(BUTTON_3);   // read the input pin
-   digitalWrite(BUTTON_LED_3, !val);    // sets the LED to the button's value
-   digitalWrite(PANEL_LED_3, !val);    // sets the LED to the button's value
-   if (val == LOW) {
-       waitForAnswer(3);
-   }
+    button_3 = digitalRead(BUTTON_3);
+    if (player_3 != last_button_3) {
+        last_button_3 = player_3;
+        send_state = true;
+    }
 
-   digitalWrite(GREEN_LED, LOW);
-   digitalWrite(YELLOW_LED, LOW);
-   digitalWrite(RED_LED, LOW);
+    // Transmit those button presses to the computer.
+    if (send_state == true){
+        send_buttons();
+    }
 
+    // Read incoming button light information from the computer.
+    while (Serial.available() > 0) {
+        int incoming_byte = Serial.read();
+        for (int i = 0; i < (SIZE_OF_INPUT_RING - 1); i++) {
+            // Shift all elements in the ring towards the head.
+            ring[i] = ring[i+1];
+        }
+        // Store the incoming_byte as the last element in the ring.
+        ring[SIZE_OF_INPUT_RING - 1] = (byte)incoming_byte;
+    }
+
+    /* Check ring buffer to see we have complete data. */
+    if (ring[0] == 'G' && ring[1] == 'Y') {
+        // We have complete serial input so light buttons if need be.
+        if (ring[2] == '1') {
+            digitalWrite(BUTTON_LED_1, HIGH);
+            digitalWrite(PANEL_LED_1, HIGH);
+        } else {
+            digitalWrite(BUTTON_LED_1, LOW);
+            digitalWrite(PANEL_LED_1, LOW);
+        }
+
+        if (ring[3] == '1') {
+            digitalWrite(BUTTON_LED_2, HIGH);
+            digitalWrite(PANEL_LED_2, HIGH);
+        } else {
+            digitalWrite(BUTTON_LED_2, LOW);
+            digitalWrite(PANEL_LED_2, LOW);
+        }
+
+        if (ring[4] == '1') {
+            digitalWrite(BUTTON_LED_3, HIGH);
+            digitalWrite(PANEL_LED_3, HIGH);
+        } else {
+            digitalWrite(BUTTON_LED_3, LOW);
+            digitalWrite(PANEL_LED_3, LOW);
+        }
+        /* Reset ring buffer so that button lighting is not activated again. */
+        ring[0] = ' ';
+        ring[1] = ' ';
+    }
+
+    /* Do nothing with the other LEDs for the moment. */
+    digitalWrite(GREEN_LED, LOW);
+    digitalWrite(YELLOW_LED, LOW);
+    digitalWrite(RED_LED, LOW);
 }
 
-void waitForAnswer(int player) {
-
-   int blinkInterval = 250; // On and off time for timer LEDs
-   int i;
-
-   // Set Current Player
-   currentPlayer = player;
-   Serial.print("Player ");
-   Serial.print(currentPlayer);
-   Serial.println(" Answering");
-
-   // Blink green for 1/3 of timeToAnswer
-#ifdef DEBUG
-   Serial.println("Blinking Green");
-#endif
-   i = timeToAnswer / 3;
-   while(i > 0) {
-#ifdef DEBUG
-      Serial.println(i);
-#endif
-      if (checkForReset() == LOW) {
-          return;
-      }
-      digitalWrite(GREEN_LED, HIGH);
-      delay(blinkInterval);
-      if (checkForReset() == LOW) {
-          return;
-      }
-      i = i - blinkInterval;
-      digitalWrite(GREEN_LED, LOW);
-      delay(blinkInterval);
-      if (checkForReset() == LOW) {
-          return;
-      }
-      i = i - blinkInterval;
-   }
-
-   // Blink yellow for 1/3 of timeToAnswer
-#ifdef DEBUG
-   Serial.println("Blinking Yellow");
-#endif
-   i = timeToAnswer / 3;
-   while (i > 0) {
-#ifdef DEBUG
-      Serial.println(i);
-#endif
-      if (checkForReset() == LOW) {
-          return;
-      }
-      digitalWrite(YELLOW_LED, HIGH);
-      delay(blinkInterval);
-      if (checkForReset() == LOW) {
-          return;
-      }
-      i = i - blinkInterval;
-      digitalWrite(YELLOW_LED, LOW);
-      delay(blinkInterval);
-      if (checkForReset() == LOW) {
-          return;
-      }
-      i = i - blinkInterval;
-   }
-
-
-   // Blink yellow for 1/3 of timeToAnswer
-#ifdef DEBUG
-   Serial.println("Blinking Red");
-#endif
-
-   i = timeToAnswer / 3;
-   while (i > 0) {
-#ifdef DEBUG
-      Serial.println(i);
-#endif
-      if (checkForReset() == LOW) {
-          return;
-      }
-      digitalWrite(RED_LED, HIGH);
-      delay(blinkInterval);
-      if (checkForReset() == LOW) {
-          return;
-      }
-      i = i - blinkInterval;
-      digitalWrite(RED_LED, LOW);
-      delay(blinkInterval);
-      if (checkForReset() == LOW) {
-          return;
-      }
-      i = i - blinkInterval;
-   }
-
+/** Print the value of a single button. */
+void print_button(int button_value)
+{
+    if (button_value == HIGH) {
+        Serial.print("1");
+    } else {
+        Serial.print("0");
+    }
 }
 
-int checkForReset() {
+/** Send all information about buttons. */
+void send_buttons()
+{
+    Serial.print("GY");
+    print_button(button_1);
+    print_button(button_2);
+    print_button(button_3);
+}
+
+int handle_reset() {
     int val = HIGH;
     val = digitalRead(BUTTON_PANEL_RESET); // read the input pin
-    return val;
+    if (val == LOW) {
+        /* The reset button is pressed. Stop serial receiving and sending. */
+        Serial.end();
+    }
+    while (val == LOW) {
+        /* What until reset button is depressed. */
+        val = digitalRead(BUTTON_PANEL_RESET);
+    }
+    /* Restart normal operation. */
+    Serial.begin(9600);
 }
 
