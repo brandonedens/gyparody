@@ -75,14 +75,8 @@ class ClueSquare(Square):
 
     def __init__(self, clue):
         self.clue = clue
-        if clue.state == 'answered':
-            super(ClueSquare, self).__init__('', '')
-        elif clue.state == 'unanswered':
-            super(ClueSquare, self).__init__(config.clue_value_font, clue)
-            self.set_color(config.clue_value_color)
-        elif clue.state == 'selected':
-            super(ClueSquare, self).__init__(config.clue_font, clue)
-            self.set_color(clutter.Color(255, 255, 255))
+        super(ClueSquare, self).__init__(config.clue_value_font, clue)
+        self.set_color(config.clue_value_color)
 
         self.set_reactive(True)
         self.connect('button-release-event', self.on_click)
@@ -93,10 +87,6 @@ class ClueSquare(Square):
             self.set_text(config.clue_value_font, self.clue.get_value())
             self.set_color(config.clue_value_color)
         elif self.clue.state == 'selected':
-            self.set_text(config.clue_font, self.clue.answer)
-        elif self.clue.state == 'question':
-            self.set_text(config.clue_font, self.clue.question)
-        elif self.clue.state == 'answered':
             self.set_text(config.clue_font, '')
 
     def on_click(self, actor, event):
@@ -106,7 +96,7 @@ class ClueSquare(Square):
         if self.clue.state == 'unanswered':
             self.clue.state = 'selected'
             logging.debug("Clue answer = %s" % self.clue.get_answer())
-            self.set_text(config.clue_font, self.clue.get_answer())
+            self.set_text('')
 
 class CategoryColumn(clutter.Box):
 

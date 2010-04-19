@@ -131,15 +131,42 @@ class PlayerBuzzOverlay(clutter.Box):
         self.text = Text(config.player_overlay_font, text)
         self.add(self.text)
 
+class PlayerScoreOverlay(clutter.Box):
+    """
+    An overlay for player score information.
+    """
+
+    def __init__(self):
+        """
+        """
+        super(PlayerScoreOverlay, self).__init__(clutter.BinLayout(
+            clutter.BIN_ALIGNMENT_CENTER,
+            clutter.BIN_ALIGNMENT_CENTER))
+        self.set_color(config.square_background_color)
+        self.text = Text('', '')
+
+    def set_text(self, text):
+        """
+        """
+        self.remove(self.text)
+        self.text = Text(config.player_overlay_font, text)
+        self.add(self.text)
+
 
 class GUI(clutter.Stage):
     """
     """
 
+    SHOW_GAME_BOARD = 'SHOW_GAME_BOARD'
+    SHOW_CLUE = 'SHOW_CLUE'
+    SHOW_QUESTION = 'SHOW_QUESTION'
+
     def __init__(self):
         super(GUI, self).__init__()
 
         logging.info('Initializing game gui.')
+
+        self.gui_state = self.SHOW_GAME_BOARD
 
         # Set the stage background to grey.
         self.set_color(MAIN_STAGE_BACKGROUND_COLOR)
@@ -155,7 +182,7 @@ class GUI(clutter.Stage):
         self.game_board = GameBoard()
         self.add(self.game_board)
 
-        # Overly box for displaying clue information and answers
+        # Overlay box for displaying clue information and answers
         self.clue_overlay = clue_overlay
         self.add(self.clue_overlay)
 
@@ -171,6 +198,13 @@ class GUI(clutter.Stage):
         self.player_buzz_overlay.set_opacity(0)
         self.add(self.player_buzz_overlay)
 
+        # Overlay box for displaying player score.
+        self.player_score_overlay = PlayerScoreOverlay()
+        self.player_score_overlay.set_size(self.get_width(),
+                                          self.get_height())
+        self.player_score_overlay.set_opacity(0)
+        self.add(self.player_score_overlay)
+
         # Set a default stage size.
         self.set_fullscreen(False)
         self.set_size(800, 600)
@@ -183,11 +217,8 @@ class GUI(clutter.Stage):
         """
         if type(event.source) == ClueSquare:
             clue_square = event.source
-            self.clue_overlay.set_text(clue_square.clue.answer)
-            self.clue_overlay.animate(clutter.LINEAR,
-                                      500,
-                                      'width', self.get_width(),
-                                      'height', self.get_height())
+            logging.debug('Notify game clue selected')
+            game.select_clue(clue_square.clue)
 
     def on_press(self, actor, event):
         """
@@ -196,21 +227,32 @@ class GUI(clutter.Stage):
             clutter.main_quit()
         elif event.keyval == clutter.keysyms.a:
             # player A rings in.
-            self.player_buzz_overlay.set_opacity(255)
-            self.player_buzz_overlay.set_text('Brandon')
-            self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
-                                             1000,
-                                             'opacity', 0)
+            game.buzz(0)
+            self.update()
         elif event.keyval == clutter.keysyms.b:
             # player B rings in.
-            self.player_buzz_overlay.set_opacity(255)
-            self.player_buzz_overlay.set_text('Paolo')
-            self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
-                                             1000,
-                                             'opacity', 0)
+            game.buzz(1)
+            self.update()
         elif event.keyval == clutter.keysyms.c:
             # player C rings in.
-            pass
+            game.buzz(2)
+            self.update()
+        elif event.keyval == clutter.keysyms.space:
+            # multi-purpose bar press
+            game.bar()
+            self.update()
+        elif event.keyval == clutter.keysyms.x:
+            # cancel
+            game.cancel()
+            self.update()
+        elif event.keyval == clutter.keysyms.y:
+            # correct answer
+            game.correct_answer()
+            self.update()
+        elif event.keyval == clutter.keysyms.n:
+            # incorrect answer
+            game.incorrect_answer()
+            self.update()
         elif event.keyval == clutter.keysyms.l:
             if self.category_overlay in self.get_children():
                 self.category_overlay.animate(clutter.LINEAR,
@@ -227,11 +269,6 @@ class GUI(clutter.Stage):
         elif event.keyval == clutter.keysyms.f:
             # Fullscreen play area.
             self.set_fullscreen(not self.get_fullscreen())
-        elif event.keyval == clutter.keysyms.t:
-            self.clue_overlay.animate(clutter.LINEAR,
-                                      500,
-                                      'width', self.get_width(),
-                                      'height', self.get_height())
 
     def set_size(self, width, height):
         """
@@ -262,9 +299,64 @@ class GUI(clutter.Stage):
         """
         self.set_size(config.screen_width, config.screen_height)
 
-    def on_second(self):
+    def on_tick(self):
         """
-        Call back associated with each second.
+        Call back associated with each tick.
         """
-        game.on_second()
+        game.on_tick()
+        self.update()
+        return True
+
+    def update(self):
+        """
+        Update the GUI based on the current state of the game.
+        """
+        if game.check_timeout_beep():
+            logging.debug("****************** BZZZZZT! ******************")
+        if game.check_flash_player_name():
+            player_name = game.players[game.buzzed_player].name
+            self.player_buzz_overlay.set_opacity(255)
+            self.player_buzz_overlay.set_text(player_name)
+            self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             1000,
+                                             'opacity', 0)
+        if game.check_flash_player_score():
+            player = game.players[game.buzzed_player]
+            text = '%s\n$%d' % (player.name, player.score)
+            self.player_buzz_overlay.set_opacity(255)
+            self.player_buzz_overlay.set_text(text)
+            self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             1000,
+                                             'opacity', 0)
+
+        if game.state == game.IDLE:
+            new_gui_state = self.SHOW_GAME_BOARD
+        elif game.state in (game.DISPLAY_CLUE, game.AWAIT_BUZZ, game.AWAIT_ANSWER):
+            new_gui_state = self.SHOW_CLUE
+        elif game.state == game.DISPLAY_QUESTION:
+            new_gui_state = self.SHOW_QUESTION
+        else:
+            logging.error('Invalid game state')
+
+        if self.gui_state != new_gui_state:
+            logging.debug("State %s to %s" % (self.gui_state, new_gui_state))
+            if new_gui_state == self.SHOW_CLUE:
+                self.clue_overlay.set_text(game.selected_clue.answer)
+                self.clue_overlay.set_opacity(255)
+                self.clue_overlay.animate(clutter.LINEAR,
+                                          500,
+                                          'width', self.get_width(),
+                                          'height', self.get_height())
+            elif new_gui_state == self.SHOW_QUESTION:
+                self.clue_overlay.set_text(game.selected_clue.question)
+                self.clue_overlay.set_opacity(255)
+                self.clue_overlay.animate(clutter.LINEAR,
+                                          500,
+                                          'width', self.get_width(),
+                                          'height', self.get_height())
+            elif new_gui_state == self.SHOW_GAME_BOARD:
+                logging.debug("Hiding clue overlay")
+                self.clue_overlay.set_opacity(0)
+
+            self.gui_state = new_gui_state
 

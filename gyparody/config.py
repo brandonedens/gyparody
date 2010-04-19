@@ -59,6 +59,8 @@ class Config(object):
 
         # Timeouts
         self.await_answer_timeout = 5
+        self.await_buzz_timeout = 5
+        self.buzzer_lockout_time = 1
 
         # Screen setup options
         self.fullscreen = False
@@ -90,6 +92,10 @@ class Config(object):
         self.category_spacing = 10
 
         self.round_1_data = './docs/round1.yaml'
+
+        self.player_a_name = 'Brandon'
+        self.player_b_name = 'Paolo'
+        self.player_c_name = 'Foo'
 
     def load(self):
         config_filename = self._find_config_file()
