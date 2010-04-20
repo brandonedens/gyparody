@@ -106,9 +106,11 @@ class ClueOverlay(clutter.Box):
         """
         """
         self.remove(self.clue_item)
-        self.clue_item = cluttergst.VideoTexture()
-        self.clue_item.set_filename(filename)
-        self.clue_item.set_playing(True)
+        tex = cluttergst.VideoTexture()
+        tex.set_filename(filename)
+        tex.set_playing(True)
+        self.clue_item = Text(config.clue_overlay_font, 'Audio File')
+        self.add(self.clue_item)
 
     def set_image(self, filename):
         """
@@ -130,6 +132,9 @@ class ClueOverlay(clutter.Box):
         self.remove(self.clue_item)
         self.clue_item = cluttergst.VideoTexture()
         self.clue_item.set_filename(filename)
+        self.clue_item.set_keep_aspect_ratio(True)
+        #self.clue_item.set_height(config.fullscreen_height * 0.8)
+        self.clue_item.set_width(config.fullscreen_width * 0.9)
         self.add(self.clue_item)
         self.clue_item.set_playing(True)
 
