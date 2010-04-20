@@ -1,4 +1,7 @@
+*.o
+*.patch
 *.pyc
+*.zip
 build
 build-stamp
 debian/files
@@ -7,3 +10,4 @@ debian/gyparody.postinst.debhelper
 debian/gyparody.prerm.debhelper
 debian/gyparody.substvars
 debian/gyparody
+firmware/controllers/applet/
