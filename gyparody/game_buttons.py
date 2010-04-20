@@ -70,8 +70,8 @@ class GameButtons(object):
             self.serial_rtscts = False
             self.serial.flushInput()
         except serial.serialutil.SerialException:
-            logging.error('No serial port is available.')
-            logging.error('Are the game buttons connected?')
+            print 'No serial port is available.'
+            print 'Are the game buttons connected?'
 
         self.ring = 'XXABC'
 
