@@ -100,14 +100,38 @@ class ClueOverlay(clutter.Box):
             clutter.BIN_ALIGNMENT_CENTER))
         self.set_size(1, 1)
         self.set_color(config.square_background_color)
-        self.text = Text('', '')
+        self.clue_item = Text('', '')
+
+    def set_audio(self, filename):
+        """
+        """
+        self.remove(self.clue_item)
+        self.clue_item = cluttergst.VideoTexture()
+        self.clue_item.set_filename(filename)
+        self.clue_item.set_playing(True)
+
+    def set_image(self, filename):
+        """
+        """
+        self.remove(self.clue_item)
+        self.clue_item = clutter.Texture(filename)
+        self.add(self.clue_item)
 
     def set_text(self, text):
         """
         """
-        self.remove(self.text)
-        self.text = Text(config.clue_overlay_font, text)
-        self.add(self.text)
+        self.remove(self.clue_item)
+        self.clue_item = Text(config.clue_overlay_font, text)
+        self.add(self.clue_item)
+
+    def set_video(self, filename):
+        """
+        """
+        self.remove(self.clue_item)
+        self.clue_item = cluttergst.VideoTexture()
+        self.clue_item.set_filename(filename)
+        self.add(self.clue_item)
+        self.clue_item.set_playing(True)
 
 clue_overlay = ClueOverlay()
 
@@ -345,7 +369,14 @@ class GUI(clutter.Stage):
         if self.gui_state != new_gui_state:
             logging.debug("State %s to %s" % (self.gui_state, new_gui_state))
             if new_gui_state == self.SHOW_CLUE:
-                self.clue_overlay.set_text(game.selected_clue.answer)
+                if game.selected_clue.get_type() == 'audio':
+                    self.clue_overlay.set_audio(game.selected_clue.answer['audio'])
+                elif game.selected_clue.get_type() == 'image':
+                    self.clue_overlay.set_image(game.selected_clue.answer['image'])
+                elif game.selected_clue.get_type() == 'text':
+                    self.clue_overlay.set_text(game.selected_clue.answer)
+                elif game.selected_clue.get_type() == 'video':
+                    self.clue_overlay.set_video(game.selected_clue.answer['video'])
                 self.clue_overlay.set_opacity(255)
                 self.clue_overlay.animate(clutter.LINEAR,
                                           500,

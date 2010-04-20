@@ -37,12 +37,14 @@
 
 - Old Computers:
     - answer:
-        img: 'vic20.jpg'
+        image: '/tmp/test.png'
       question: What is a VIC-20?
-    - answer: This is the best.
-      question: What is a yoyo?
-    - answer: This is the best.
-      question: What is a yoyo?
+    - answer:
+        video: '/tmp/test.avi'
+      question: What is random video?
+    - answer:
+        audio: '/tmp/test.mp3'
+      question: What is random audio?
     - answer: This is the best.
       question: What is a yoyo?
     - answer: This is the best.

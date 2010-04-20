@@ -94,6 +94,29 @@ class Clue(object):
         """
         return self.answer
 
+    def get_type(self):
+        """
+        Getting the clue type.
+        """
+        if type(self.answer) != dict:
+            return 'text'
+
+        try:
+            self.answer['image']
+            return 'image'
+        except KeyError:
+            pass
+        try:
+            self.answer['video']
+            return 'video'
+        except KeyError:
+            pass
+        try:
+            self.answer['audio']
+            return 'audio'
+        except KeyError:
+            pass
+
     def marshall(self):
         """
         """
@@ -367,7 +390,7 @@ class Game(object):
             self.state = self.DISPLAY_QUESTION
         else:
             logging.error("Cannot cancel from this state")
- 
+
     def check_timeout_beep(self):
         flag = self.timeout_beep
         self.timeout_beep = False
