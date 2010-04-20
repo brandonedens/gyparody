@@ -245,7 +245,7 @@ void loop()
 /** Print the value of a single button. */
 void print_button(int button_value)
 {
-    if (button_value == HIGH) {
+    if (button_value == LOW) {
         Serial.print("1");
     } else {
         Serial.print("0");
