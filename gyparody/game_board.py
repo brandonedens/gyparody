@@ -96,7 +96,7 @@ class ClueSquare(Square):
         if self.clue.state == 'unanswered':
             self.clue.state = 'selected'
             logging.debug("Clue answer = %s" % self.clue.get_answer())
-            self.set_text('')
+            self.set_text('', '')
 
 class CategoryColumn(clutter.Box):
 
