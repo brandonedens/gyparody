@@ -37,13 +37,13 @@
 
 - Old Computers:
     - answer:
-        image: '/tmp/test.png'
+        image: './tests/test.jpg'
       question: What is a VIC-20?
     - answer:
-        video: '/tmp/test.avi'
+        video: './tests/test.ogg'
       question: What is random video?
     - answer:
-        audio: '/tmp/test.mp3'
+        audio: './tests/test.wav'
       question: What is random audio?
     - answer: This is the best.
       question: What is a yoyo?
