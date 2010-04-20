@@ -67,8 +67,12 @@ class Config(object):
         self.serial_baud_rate = 57600
 
         # Timeouts
+        # After a player buzzes in the number of seconds alotted for them to
+        # answer.
         self.await_answer_timeout = 5
-        self.await_buzz_timeout = 5
+        # After question is read, the number of seconds to await an incoming
+        # player buzz.
+        self.await_buzz_timeout = 10
         self.buzzer_lockout_time = 1
 
         # Screen setup options
