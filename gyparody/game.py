@@ -325,8 +325,10 @@ class Game(object):
         game_buttons.player_set(player_index, True)
         # Note this player buzzed in so they can't buzz in again
         self.buzzed_players.append(player_index)
+        # Update the current timeout start to reflect the number of seconds a
+        # player has to resond with a question to the given answer.
+        self.timeout_start = time.time()
         # Record the time of the buzz-in for timeout
-
         self.flash_player_name = True
         self.state = self.AWAIT_ANSWER
 
@@ -360,8 +362,10 @@ class Game(object):
         # Disable all lit players.
         game_buttons.reset_player_lights()
 
-        logging.debug("Incorrect answer, Going to DISPLAY_CLUE state")
-        self.state = self.DISPLAY_CLUE
+        logging.debug("Incorrect answer, Going to AWAIT_BUZZ state")
+        self.state = self.AWAIT_BUZZ
+        # Resetting timeout to number of seconds players get to buzz in.
+        self.timeout_start = time.time()
         self.buzzer_lockouts = {}
         self.flash_player_score = True
 
