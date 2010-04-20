@@ -291,6 +291,13 @@ class GUI(clutter.Stage):
                 self.category_overlay.animate(clutter.LINEAR,
                                               500,
                                               'x', self.category_overlay.get_x() - self.get_width())
+        elif event.keyval == clutter.keysyms.p:
+            # DEBUG - for testing end of round condition without clicking everything.
+            # don't leave this active in production code!
+            for category in game.categories:
+                for clue in category.clues:
+                    clue.state = 'selected'
+            game.categories[0].clues[0].state = 'unanswered'
         elif event.keyval == clutter.keysyms.f:
             # Fullscreen play area.
             self.set_fullscreen(not self.get_fullscreen())
@@ -336,6 +343,12 @@ class GUI(clutter.Stage):
         """
         Update the GUI based on the current state of the game.
         """
+        if game.check_update_game_board():
+            self.remove(self.game_board)
+            self.game_board = GameBoard()
+            self.game_board.set_size(self.get_width(), self.get_height())
+            self.add(self.game_board)
+            self.game_board.lower_bottom()
         if game.check_timeout_beep():
             logging.debug("****************** BZZZZZT! ******************")
             tex = cluttergst.VideoTexture()

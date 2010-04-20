@@ -188,9 +188,26 @@ class Game(object):
             Player(config.player_c_name),
         ]
 
-        round1_file = open(config.round_1_data, 'r')
-        round_data = yaml.load(round1_file)
-        round1_file.close()
+        self.load_round('round1')
+
+        self.state = self.IDLE
+        self.timeout_start = None
+        self.timeout_beep = False
+        self.flash_player_name = False
+        self.flash_player_score = False
+        self.update_game_board = False
+
+    def load_round(self, round_name):
+        self.current_round = round_name
+        if self.current_round == 'round1':
+            filename = config.round_1_data
+        elif self.current_round == 'round2':
+            filename = config.round_2_data
+        else:
+            logging.error('unknown round')
+        round_file = open(filename, 'r')
+        round_data = yaml.load(round_file)
+        round_file.close()
 
         self.categories = []
         for category_data in round_data:
@@ -198,12 +215,6 @@ class Game(object):
             data = category_data[name]
             self.categories.append(
                 Category(name, data))
-
-        self.state = self.IDLE
-        self.timeout_start = None
-        self.timeout_beep = False
-        self.flash_player_name = False
-        self.flash_player_score = False
 
     def save(self):
         """
@@ -374,12 +385,14 @@ class Game(object):
             # Same as cancel, return from question to game board
             logging.debug("Going to IDLE state")
             self.state = self.IDLE
+            self.handle_round_completion()
 
     def cancel(self):
         if self.state == self.DISPLAY_QUESTION:
             # cancel from display question screen returns to game board
             logging.debug("Cancel, going to IDLE state")
             self.state = self.IDLE
+            self.handle_round_completion()
         elif self.state == self.DISPLAY_CLUE:
             # cancel from display clue goes to display question
             logging.debug("Cancel, going to DISPLAY_QUESTION state")
@@ -405,6 +418,26 @@ class Game(object):
         flag = self.flash_player_score
         self.flash_player_score = False
         return flag
+
+    def check_update_game_board(self):
+        flag = self.update_game_board
+        self.update_game_board = False
+        return flag
+
+    def handle_round_completion(self):
+        completed = True
+        for category in self.categories:
+            for clue in category.clues:
+                if clue.state == 'unanswered':
+                    completed = False
+        if completed:
+            logging.debug('The round is completed.')
+            if self.current_round == 'round1':
+                logging.debug('Advance from round 1 to round 2')
+                self.load_round('round2')
+                self.update_game_board = True
+            else:
+                logging.error('Round over, what to do now?')
 
 ###############################################################################
 ## Statements

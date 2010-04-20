@@ -97,6 +97,7 @@ class Config(object):
         self.category_spacing = 10
 
         self.round_1_data = './docs/round1.yaml'
+        self.round_2_data = './docs/round2.yaml'
 
         self.player_a_name = 'Brandon'
         self.player_b_name = 'Paolo'
