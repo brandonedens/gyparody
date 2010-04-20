@@ -62,6 +62,10 @@ class Config(object):
         self.sound_final_music = 'sounds/final_gyparody_music.wav'
         self.sound_timeout = 'sounds/timeout.wav'
 
+        # baud rate
+        self.serial_port = '/dev/ttyUSB0'
+        self.serial_baud_rate = 57600
+
         # Timeouts
         self.await_answer_timeout = 5
         self.await_buzz_timeout = 5

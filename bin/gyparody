@@ -29,6 +29,7 @@ import gobject
 import logging
 
 from gyparody.config import config
+from gyparody.game_buttons import game_buttons
 from gyparody.gui import GUI
 
 
@@ -67,5 +68,8 @@ def tick_test():
 ###############################################################################
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    finally:
+        game_buttons.close()
 

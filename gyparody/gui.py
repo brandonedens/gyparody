@@ -31,6 +31,7 @@ from config import config
 from game import game
 from game_board import GameBoard
 from game_board import ClueSquare
+from game_buttons import game_buttons
 from text import Text
 
 
@@ -257,14 +258,17 @@ class GUI(clutter.Stage):
             clutter.main_quit()
         elif event.keyval == clutter.keysyms.a:
             # player A rings in.
+            game_buttons.player_set(0, True)
             game.buzz(0)
             self.update()
         elif event.keyval == clutter.keysyms.b:
             # player B rings in.
+            game_buttons.player_set(1, True)
             game.buzz(1)
             self.update()
         elif event.keyval == clutter.keysyms.c:
             # player C rings in.
+            game_buttons.player_set(2, True)
             game.buzz(2)
             self.update()
         elif event.keyval == clutter.keysyms.space:
@@ -283,6 +287,9 @@ class GUI(clutter.Stage):
             # incorrect answer
             game.incorrect_answer()
             self.update()
+        elif event.keyval == clutter.keysyms.z:
+            logging.debug('resetting player lights')
+            game_buttons.reset_player_lights()
         elif event.keyval == clutter.keysyms.l:
             if self.category_overlay in self.get_children():
                 self.category_overlay.animate(clutter.LINEAR,
@@ -341,6 +348,15 @@ class GUI(clutter.Stage):
         Call back associated with each tick.
         """
         game.on_tick()
+        # Read incoming game button presses if they exist.
+        player1, player2, player3 = game_buttons.read()
+        if player1:
+            game.buzz(0)
+        elif player2:
+            game.buzz(1)
+        elif player3:
+            game.buzz(2)
+        game_buttons.reset_buttons()
         self.update()
         return True
 

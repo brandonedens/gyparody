@@ -30,6 +30,7 @@ import logging
 import yaml
 
 from config import config
+from game_buttons import game_buttons
 
 
 ###############################################################################
@@ -282,6 +283,8 @@ class Game(object):
             if self.timeout_start != None:
                 if time.time() - self.timeout_start > config.await_buzz_timeout:
                     self.timeout_beep = True
+                    # Disable all lit players.
+                    game_buttons.reset_player_lights()
                     self.state = self.DISPLAY_QUESTION
         elif self.state == self.AWAIT_ANSWER:
             # Check the answer timeout if there is one set.
@@ -290,34 +293,38 @@ class Game(object):
                     # Just beep and let host select correct / incorrect
                     self.timeout_beep = True
                     self.timeout_start = None
+        # Update the player lights
+        game_buttons.send_players()
 
-    def buzz(self, player):
+    def buzz(self, player_index):
         """
-        Player buzzer pressed. player is 0, 1, or 2
+        Player buzzer pressed. player_index is 0, 1, or 2
         """
         if self.state == self.DISPLAY_CLUE:
             # Player buzzed in too early, store the earliest time their buzzer can be used
-            self.buzzer_lockouts[player] = time.time() + config.buzzer_lockout_time
-            logging.debug("Locking out player %d" % player)
+            self.buzzer_lockouts[player_index] = time.time() + config.buzzer_lockout_time
+            logging.debug("Locking out player %d" % player_index)
             return
 
         if self.state != self.AWAIT_BUZZ:
             logging.error("Cannot buzz in, not in AWAIT_BUZZ")
             return
 
-        if player in self.buzzed_players:
+        if player_index in self.buzzed_players:
             logging.error("Cannot buzz in, player already buzzed in")
             return
 
-        if self.buzzer_lockouts.has_key(player) and self.buzzer_lockouts[player] > time.time():
+        if self.buzzer_lockouts.has_key(player_index) and self.buzzer_lockouts[player_index] > time.time():
             logging.debug("Cannot buzz in, locked out for buzzing early")
             return
 
         logging.debug("Going to AWAIT_ANSWER state")
         # Note this is the current player answering the question
-        self.buzzed_player = player
+        self.buzzed_player = player_index
+        # Light that player's buzzer.
+        game_buttons.player_set(player_index, True)
         # Note this player buzzed in so they can't buzz in again
-        self.buzzed_players.append(player)
+        self.buzzed_players.append(player_index)
         # Record the time of the buzz-in for timeout
 
         self.flash_player_name = True
@@ -333,6 +340,9 @@ class Game(object):
 
         self.players[self.buzzed_player].score += self.selected_clue.value
 
+        # Disable all lit players.
+        game_buttons.reset_player_lights()
+
         logging.debug("Correct answer, Going to DISPLAY_QUESTION state")
         self.state = self.DISPLAY_QUESTION
         self.flash_player_score = True
@@ -346,6 +356,9 @@ class Game(object):
             return
 
         self.players[self.buzzed_player].score -= self.selected_clue.value
+
+        # Disable all lit players.
+        game_buttons.reset_player_lights()
 
         logging.debug("Incorrect answer, Going to DISPLAY_CLUE state")
         self.state = self.DISPLAY_CLUE
