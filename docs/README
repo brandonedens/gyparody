@@ -1,48 +1,181 @@
+.. -*- mode: rst; -*-
 
-6 categories.
+========================
+Gyparody Software README
+========================
 
-5 questions in each category.
+:author: Brandon Edens
+:date: 2009-04-21
 
-first round
-$200
-$400
-$600
-$800
-$1000
-
-daily double hidden on board each round
-may wager no less than $5 on daily double
-if contestent has score less than highest dollar value in round then he/she can
-wager up to that top value. alternatively contestent can make it a true daily
-double and wager all of his/her score.
-
-must wait before host finishes reading the clue before ringing in
-
-ringing in before that point locks contestent out for two tenths of a second
-
-5 seconds to offer a response
-
-first round allowed to not form in question
-second round much more strict
-
-player with lowest amount of money in first round chooses first question in second round.
-
-double gyparody has 2 daily doubles
+.. contents:: Table of Contents
+.. sectnum::
+.. footer:: Gyparody Software README
 
 
-second round
-$400
-$800
-$1200
-$1600
-$2000
+Authors
+=======
+
+This software would not be possible if it were not for the work of:
+
+* Brandon Edens <brandon@as220.org>
+* Paolo DePetrillo <paolod@gmail.com>
 
 
-if contestent has less than $0 they cannot participate in final gyparody
+Copying
+=======
+
+This source code for this software is licensed as the GNU Public License
+version 3. A complete listing of this license is available in the COPYING file
+found in the software as well as at:
+http://www.gnu.org/licenses/gpl.html
 
 
-test.jpg taken from:
+Installing
+==========
+
+
+Software Requirements
+---------------------
+
+* pyyaml - aka python-yaml
+* libclutter >= 1.2
+* libclutter-gst >= 1.0
+* pyclutter > 1.0
+* pyclutter-gst > 1.0
+
+
+Installing Needed Libraries
+---------------------------
+
+Copies of gyparody software can be retrieved by::
+
+  git clone http://brandonedens.org/git/gyparody.git
+
+To execute the software you will need clutter >= 1.2 and pyclutter > 1.0. This
+software is relatively new (as of 2010-04-21) with libclutter 1.2 version not
+available in Ubuntu Karmic Koala.
+
+Therefore we must install the software from what is available on Clutter's
+website at: http://clutter-project.org/download.html
+
+The latest (possibly unstable versions can be obtained by executing)::
+
+  git clone git://git.clutter-project.org/clutter
+  git clone git://git.clutter-project.org/clutter-gst
+  git clone git://git.clutter-project.org/bindings/pyclutter
+  git clone git://git.clutter-project.org/bindings/pyclutter-gst
+
+See clutter's git web interface at: http://git.clutter-project.org/
+
+Building Git versions of Clutter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To build the git versions of clutter, enter the directory containing the
+downloaded software and execute::
+
+  ./autogen.sh
+  make
+  sudo make install
+
+
+Building Gyparody
+-----------------
+
+Gyparody can be executed from the directory in which it was
+downloaded. However, it can also be installed into Python or build as a
+Ubuntu/Debian .deb file for installation via dpkg/apt-get. We cover each method
+in turn.
+
+Executing Gyparody (in place)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To execute gyparody from a git checked out version first set your Python path
+to the current working directory via::
+
+  export PYTHONPATH=".:$PYTHONPATH"
+
+Then run gyparody via::
+
+  ./bin/gyparody
+
+Installing into Python Path library
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Make sure that you have python setuptools installed. Then execute::
+
+  python setup.py build
+  sudo python setup.py install
+
+Copy the ./bin/gyparody file to somewhere in your path aka::
+
+  sudo cp bin/gyparody /usr/local/bin/
+
+Installing via Ubuntu/Debian
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Enter the directory containing the gyparody
+
+Ubuntu users may elect to utilize Gyparody's build system for creating a .deb
+file that can be installed by apt-get. To do this execute the following::
+
+  dpkg-buildpackage -rfakeroot
+  sudo dpkg -i ../gyparody_*_i386.deb
+
+
+
+General Rules
+=============
+
+Game Board
+----------
+
+* 6 categories.
+* 5 questions in each category.
+
+* first round
+    - $200
+    - $400
+    - $600
+    - $800
+    - $1000
+
+* second round
+    - $400
+    - $800
+    - $1200
+    - $1600
+    - $2000
+
+* daily double hidden on board each round
+
+* may wager no less than $5 on daily double
+* if contestent has score less than highest dollar value in round then he/she
+  can wager up to that top value. alternatively contestent can make it a true
+  daily double and wager all of his/her score.
+
+* must wait before host finishes reading the clue before ringing in
+
+* ringing in before that point locks contestent out for two tenths of a second
+
+* 5 seconds to offer a response
+
+* first round allowed to not form in question
+* second round much more strict
+
+* player with lowest amount of money in first round chooses first question in
+  second round.
+
+* double gyparody has 2 daily doubles
+
+* if contestent has less than $0 they cannot participate in final gyparody
+
+
+Credits / Attribution
+=====================
+
+./tests/test.jpg taken from:
 http://www.flickr.com/photos/humboldthead/4536402090/
 
-
+./tests/test.avi courtesy of 20th Century Fox:
+http://www.google.com/search?q=20th+centruy+fox+intro&tbo=p&tbs=vid%3A1&source=vgc&hl=en&aq=f
 
