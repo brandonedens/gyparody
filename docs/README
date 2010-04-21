@@ -149,13 +149,13 @@ Game Board
 * daily double hidden on board each round
 
 * may wager no less than $5 on daily double
-* if contestent has score less than highest dollar value in round then he/she
-  can wager up to that top value. alternatively contestent can make it a true
+* if contestant has score less than highest dollar value in round then he/she
+  can wager up to that top value. alternatively contestant can make it a true
   daily double and wager all of his/her score.
 
 * must wait before host finishes reading the clue before ringing in
 
-* ringing in before that point locks contestent out for two tenths of a second
+* ringing in before that point locks contestant out for two tenths of a second
 
 * 5 seconds to offer a response
 
@@ -167,7 +167,68 @@ Game Board
 
 * double gyparody has 2 daily doubles
 
-* if contestent has less than $0 they cannot participate in final gyparody
+* if contestant has less than $0 they cannot participate in final gyparody
+
+
+
+Administering Gyparody Game
+===========================
+
+General Notes
+-------------
+
+Pressing 'f' on the keyboard will fullscreen the game board screen. Pressing
+'f' again will unfullscreen the game board.
+
+The host can press the 's' button on the keyboard at any time to display the
+contestant scores. Pressing 's' again will remove the scores.
+
+At the start of the round the host can press the 'l' key to begin displaying
+category information full-screen. Pressing 'l' again will scroll the category
+information leftwards displaying more category information. The idea is that
+the host reads each category verbally to the audience in turn until all
+categories have been read.
+
+
+Gameplay of the round
+---------------------
+
+* During a round the host responds to contestants choosing a category and value
+  of question by clicking on the appropriate square on the gameboard.
+
+* After clicking a square the host reads the clue then presses the space bar.
+
+* The contestants then have 10 seconds to buzz in their answer (via the arduino
+  attached buzzers or by pressing the 'a', 'b', or 'c' buttons on the keyboard.
+
+* If a contestant buzzes in to respond to the clue then they have 5 seconds to
+* begin answering their clue. If a contestant begins answering the host presses
+* the space bar.
+  - If a contestant is correct the host presses 'y'.
+  - If a contestant  is wrong the host presses 'n'.
+
+* If a contestant answers the clue correctly then the new value of their score
+  is displayed with the value of the clue added to their score. The game then
+  displays the answer to the clue for the audience. Finally the game reverts
+  back to the game board display so that the contestant that answered correctly
+  can choose their next clue.
+
+* If a contestant answers the clue wrong then the value of the clue is
+  decremented from their score which is displayed on the screen. The game
+  reverts back to a display of the clue and other contestants can buzz in to
+  answer the clue (they have 10 seconds to do so). If no-one elects to buzz
+  their buzzer then the game automatically displays the correct answer and
+  reverts to the game board.
+
+
+End of the round
+----------------
+
+* The round ends when all questions have been answered. If the ending round is
+  round 1 then the game board immediately cycles over to displaying round 2. If
+  this is the end of round 2 then the game cycles over to displaying final
+  gyparody.
+
 
 
 Credits / Attribution
