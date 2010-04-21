@@ -33,6 +33,13 @@ http://www.gnu.org/licenses/gpl.html
 Installing
 ==========
 
+Some basic competency in *nix is required. Knowing how to operating the command
+line and install software via your package manager is necessary. This software
+has only been tested on GNU/Linux machines. Please do not email the authors
+with software installation problems if those problems involve installing 3rd
+party software such as clutter OR issues with operating your OSes package
+manager.
+
 
 Software Requirements
 ---------------------
