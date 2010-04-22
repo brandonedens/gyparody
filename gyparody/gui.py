@@ -27,6 +27,7 @@ import clutter
 import cluttergst
 import logging
 
+from admin import Admin
 from config import config
 from game import game
 from game_board import GameBoard
@@ -201,6 +202,8 @@ class GUI(clutter.Stage):
         super(GUI, self).__init__()
 
         logging.info('Initializing game gui.')
+
+        self.admin = Admin()
 
         self.gui_state = self.SHOW_GAME_BOARD
 

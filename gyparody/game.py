@@ -462,6 +462,9 @@ class Game(object):
             else:
                 logging.error('Round over, what to do now?')
 
+    def adjust_score(self, player, offset):
+        self.players[player].score += offset
+
 ###############################################################################
 ## Statements
 ###############################################################################

@@ -111,6 +111,9 @@ class Config(object):
         # Spacing between categories
         self.category_spacing = 10
 
+        # Admin font
+        self.admin_font = "Sans"
+
         self.round_1_data = './docs/round1.yaml'
         self.round_2_data = './docs/round2.yaml'
 
