@@ -59,7 +59,7 @@ class Config(object):
 
         # Audio filenames
         self.sound_daily_double = 'sounds/daily_double.wav'
-        self.sound_final_music = 'sounds/final_gyparody_music.wav'
+        self.sound_final_music = 'sounds/final_music.wav'
         self.sound_timeout = 'sounds/timeout.wav'
 
         # baud rate
@@ -121,6 +121,7 @@ class Config(object):
 
         self.round_1_data = './docs/round1.yaml'
         self.round_2_data = './docs/round2.yaml'
+        self.final_round = './docs/final_round.yaml'
 
         self.player_a_name = 'Brandon'
         self.player_b_name = 'Paolo'

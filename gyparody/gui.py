@@ -127,7 +127,7 @@ class ClueOverlay(clutter.Box):
         """
         """
         self.remove(self.clue_item)
-        self.clue_item.set_text(config.clue_overlay_font, text)
+        self.clue_item = Text(config.clue_overlay_font, text)
         self.clue_item.set_size(self.get_width(), self.get_height())
         self.add(self.clue_item)
 
@@ -174,6 +174,37 @@ class FinalRoundOverlay(clutter.Box):
             clutter.BIN_ALIGNMENT_CENTER))
         self.set_color(config.square_background_color)
         self.text = Text(config.final_round_font, 'Final\nRound')
+        self.text.set_size(self.get_width(), self.get_height())
+        self.add(self.text)
+        self.music = cluttergst.VideoTexture()
+        self.music.set_filename(config.sound_final_music)
+
+    def is_playing(self):
+        """
+        """
+        logging.debug("final found music progress %f" % self.music.get_progress())
+        playing = False
+        if self.music.get_playing() and self.music.get_progress() < 1.0:
+            playing = True
+        return playing
+
+    def play_music(self):
+        """
+        """
+        self.music.set_playing(True)
+
+    def set_size(self, width, height):
+        """
+        """
+        super(FinalRoundOverlay, self).set_size(width, height)
+        self.text.set_size(width, height)
+
+    def set_text(self, text):
+        """
+        """
+        self.remove(self.text)
+        self.text = Text(config.clue_overlay_font, text)
+        self.text.set_size(self.get_width(), self.get_height())
         self.add(self.text)
 
 class PlayerBuzzOverlay(clutter.Box):
@@ -225,6 +256,10 @@ class GUI(clutter.Stage):
     SHOW_GAME_BOARD = 'SHOW_GAME_BOARD'
     SHOW_CLUE = 'SHOW_CLUE'
     SHOW_QUESTION = 'SHOW_QUESTION'
+    SHOW_FINAL_ROUND = 'SHOW_FINAL_ROUND'
+    SHOW_FINAL_ROUND_CATEGORY = 'SHOW_FINAL_ROUND_CATEGORY'
+    SHOW_FINAL_ROUND_CLUE = 'SHOW_FINAL_ROUND_CLUE'
+    SHOW_FINAL_ROUND_QUESTION = 'SHOW_FINAL_ROUND_QUESTION'
 
     def __init__(self):
         super(GUI, self).__init__()
@@ -313,6 +348,13 @@ class GUI(clutter.Stage):
         self.daily_double_overlay.set_opacity(0)
         self.add(self.daily_double_overlay)
 
+        # Overlay box for final round.
+        self.final_round_overlay = FinalRoundOverlay()
+        self.final_round_overlay.set_size(self.get_width(),
+                                          self.get_height())
+        self.final_round_overlay.set_opacity(0)
+        self.add(self.final_round_overlay)
+
         # Set a default stage size.
         self.set_fullscreen(False)
         self.set_size(800, 600)
@@ -349,9 +391,12 @@ class GUI(clutter.Stage):
             game.buzz(2)
             self.update()
         elif event.keyval == clutter.keysyms.space:
-            # multi-purpose bar press
-            game.bar()
-            self.update()
+            if not self.final_round_overlay.is_playing():
+                # We do not allow for incoming space button presses when final
+                # round overlay music is playing.
+                # multi-purpose bar press
+                game.bar()
+                self.update()
         elif event.keyval == clutter.keysyms.x:
             # cancel
             game.cancel()
@@ -413,6 +458,7 @@ class GUI(clutter.Stage):
         self.category_overlay.set_size(self.get_width(), self.get_height())
         self.player_buzz_overlay.set_size(self.get_width(), self.get_height())
         self.daily_double_overlay.set_size(self.get_width(), self.get_height())
+        self.final_round_overlay.set_size(self.get_width(), self.get_height())
 
     def on_tick(self):
         """
@@ -480,8 +526,17 @@ class GUI(clutter.Stage):
                                              1000,
                                              'opacity', 0)
 
+        new_gui_state = self.gui_state
         if game.state == game.IDLE:
             new_gui_state = self.SHOW_GAME_BOARD
+        elif game.state == game.FINAL_ROUND:
+            new_gui_state = self.SHOW_FINAL_ROUND
+        elif game.state == game.FINAL_ROUND_WAGER:
+            new_gui_state = self.SHOW_FINAL_ROUND_CATEGORY
+        elif game.state == game.FINAL_ROUND_CLUE:
+            new_gui_state = self.SHOW_FINAL_ROUND_CLUE
+        elif game.state == game.FINAL_ROUND_QUESTION:
+            new_gui_state = self.SHOW_FINAL_ROUND_QUESTION
         elif game.state in (game.DISPLAY_CLUE,
                             game.AWAIT_BUZZ,
                             game.AWAIT_ANSWER,
@@ -519,6 +574,18 @@ class GUI(clutter.Stage):
             elif new_gui_state == self.SHOW_GAME_BOARD:
                 logging.debug("Hiding clue overlay")
                 self.clue_overlay.set_opacity(0)
+            elif new_gui_state == self.SHOW_FINAL_ROUND:
+                self.final_round_overlay.set_opacity(255)
+            elif new_gui_state == self.SHOW_FINAL_ROUND_CATEGORY:
+                self.final_round_overlay.set_opacity(255)
+                self.final_round_overlay.set_text("Category:\n%s" % game.final_round.category)
+            elif new_gui_state == self.SHOW_FINAL_ROUND_CLUE:
+                self.final_round_overlay.set_opacity(255)
+                self.final_round_overlay.set_text(game.final_round.answer)
+                self.final_round_overlay.play_music()
+            elif new_gui_state == self.SHOW_FINAL_ROUND_QUESTION:
+                self.final_round_overlay.set_opacity(255)
+                self.final_round_overlay.set_text(game.final_round.question)
 
             self.gui_state = new_gui_state
 

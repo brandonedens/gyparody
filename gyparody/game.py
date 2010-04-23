@@ -180,10 +180,25 @@ class Category(object):
         data[self.name] = clue_list
         return data
 
+class FinalRound(object):
+    """
+    """
+
+    def __init__(self, final_round_data):
+        """
+        """
+        self.category = final_round_data.keys()[0]
+        self.answer = final_round_data[self.category]['answer']
+        self.question = final_round_data[self.category]['question']
+
 class Game(object):
     IDLE = 'IDLE'
     DISPLAY_CLUE = 'DISPLAY_CLUE'
     DISPLAY_QUESTION = 'DISPLAY_QUESTION'
+    FINAL_ROUND = 'FINAL_ROUND'
+    FINAL_ROUND_WAGER = 'FINAL_ROUND_WAGER'
+    FINAL_ROUND_CLUE = 'FINAL_ROUND_CLUE'
+    FINAL_ROUND_QUESTION = 'FINAL_ROUND_QUESTION'
     AWAIT_BUZZ = 'AWAIT_BUZZ'
     AWAIT_ANSWER = 'AWAIT_ANSWER'
     DAILY_DOUBLE_AWAIT_WAGER = 'DAILY_DOUBLE_AWAIT_WAGER'
@@ -204,12 +219,15 @@ class Game(object):
         self.state = self.IDLE
         self.timeout_start = None
         self.timeout_beep = False
+        self.final_round = None
         self.flash_player_name = False
         self.flash_player_score = False
         self.flash_daily_double = False
         self.clear_daily_double = False
         self.update_game_board = False
         self.wager = 0
+
+        self.load_final_round()
 
     def load_round(self, round_name):
         self.current_round = round_name
@@ -219,8 +237,6 @@ class Game(object):
         elif self.current_round == 'round2':
             filename = config.round_2_data
             is_round_2[0] = True
-        elif self.current_round == 'final':
-            pass
         else:
             logging.error('unknown round')
         round_file = open(filename, 'r')
@@ -233,6 +249,17 @@ class Game(object):
             data = category_data[name]
             self.categories.append(
                 Category(name, data))
+
+    def load_final_round(self):
+        """
+        Load the final round data into the game.
+        """
+        filename = config.final_round
+        fh = open(filename, 'r')
+        final_round_data = yaml.load(fh)
+        fh.close()
+        self.final_round = FinalRound(final_round_data)
+
 
     def save(self):
         """
@@ -443,6 +470,15 @@ class Game(object):
             logging.debug("Going to DISPLAY_CLUE, clear daily double")
             self.state = self.DISPLAY_CLUE
             self.clear_daily_double = True
+        elif self.state == self.FINAL_ROUND:
+            logging.debug('Going to FINAL_ROUND_WAGER, clear final round')
+            self.state = self.FINAL_ROUND_WAGER
+        elif self.state == self.FINAL_ROUND_WAGER:
+            logging.debug('Going to FINAL_ROUND_CLUE, clear final round category')
+            self.state = self.FINAL_ROUND_CLUE
+        elif self.state == self.FINAL_ROUND_CLUE:
+            logging.debug('Going to FINAL_ROUND_QUESTION, clear final round clue')
+            self.state = self.FINAL_ROUND_QUESTION
 
     def cancel(self):
         if self.state == self.DISPLAY_QUESTION:
@@ -503,6 +539,9 @@ class Game(object):
                 logging.debug('Advance from round 1 to round 2')
                 self.load_round('round2')
                 self.update_game_board = True
+            elif self.current_round == 'round2':
+                logging.debug('Advance from round 2 to final round')
+                self.state = self.FINAL_ROUND
             else:
                 logging.error('Round over, what to do now?')
 
@@ -522,6 +561,7 @@ class Game(object):
         for player in self.players:
             s += '%s: %d, ' % (player.name, player.score)
         logging.info(s)
+
 
 ###############################################################################
 ## Statements
