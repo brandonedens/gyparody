@@ -114,6 +114,9 @@ class Config(object):
         # Admin font
         self.admin_font = "Sans"
 
+        # Final round font
+        self.final_found_font = 'Gyparody 48'
+
         self.round_1_data = './docs/round1.yaml'
         self.round_2_data = './docs/round2.yaml'
 

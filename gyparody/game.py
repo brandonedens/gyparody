@@ -217,6 +217,8 @@ class Game(object):
         elif self.current_round == 'round2':
             filename = config.round_2_data
             is_round_2[0] = True
+        elif self.current_round == 'final':
+            pass
         else:
             logging.error('unknown round')
         round_file = open(filename, 'r')
