@@ -381,7 +381,7 @@ class GUI(clutter.Stage):
                                                                      stage.get_width(),
                                                                      stage.get_height()))
         self.clue_overlay.set_size(self.get_width(), self.get_height())
-        self.daily_double_overlay(self.get_width(), self.get_height())
+        self.daily_double_overlay.set_size(self.get_width(), self.get_height())
         self.game_board.set_size(self.get_width() * 0.9, self.get_height())
         self.board_box.set_size(self.get_width(), self.get_height())
         self.category_overlay.set_size(self.get_width(), self.get_height())
