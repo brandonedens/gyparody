@@ -139,7 +139,7 @@ class ClueOverlay(clutter.Box):
         self.clue_item.set_filename(filename)
         self.clue_item.set_keep_aspect_ratio(True)
         #self.clue_item.set_height(config.fullscreen_height * 0.8)
-        self.clue_item.set_width(config.fullscreen_width * 0.9)
+        self.clue_item.set_width(self.get_width() * 0.9)
         self.add(self.clue_item)
         self.clue_item.set_playing(True)
 
@@ -381,7 +381,7 @@ class GUI(clutter.Stage):
         try:
             super(GUI, self).set_size(width, height)
             self.board_box.set_size(width, height)
-            self.game_board.set_size(width * 0.9, height)
+            self.clue_overlay.set_size(width, height)
             self.category_overlay.set_size(width, height)
             self.player_buzz_overlay.set_size(width, height)
         except AttributeError:
@@ -404,14 +404,16 @@ class GUI(clutter.Stage):
         Signal for when main game stage is fullscreened. This signal resizes
         all contained elements.
         """
-        self.set_size(config.fullscreen_width, config.fullscreen_height)
+        #self.set_size(config.fullscreen_width, config.fullscreen_height)
+        self.set_size(self.get_width(), self.get_height())
 
     def on_unfullscreen(self, stage):
         """
         Signal for when main game stage is un-fullscreened. This signal resizes
         all contained elements.
         """
-        self.set_size(config.screen_width, config.screen_height)
+        #self.set_size(config.screen_width, config.screen_height)
+        self.set_size(self.get_width(), self.get_height())
 
     def on_tick(self):
         """
