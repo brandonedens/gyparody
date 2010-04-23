@@ -28,70 +28,204 @@ import logging
 
 from config import config
 from game import game
+from game_board import GameBoard
+
 
 ###############################################################################
 ## Classes
 ###############################################################################
 
-class Admin(clutter.Stage):
+class PlayerScoreBox(clutter.Box):
     """
     """
 
     def __init__(self):
-        super(Admin, self).__init__()
+        super(PlayerScoreBox, self).__init__(clutter.BoxLayout())
 
-        self.set_fullscreen(False)
-        self.set_size(400, 300)
-        self.set_user_resizable(False)
-
-        box = clutter.Box(clutter.BoxLayout())
-        layout = box.get_layout_manager()
+        self.set_color(config.background_color)
+        layout = self.get_layout_manager()
         layout.set_vertical(True)
-        self.add(box)
+
+        self.players = game.get_players()
 
         self.scores = []
-        for i in range(3):
-            box.add(clutter.Text(config.admin_font, 'Set player %d score:' % (i+1)))
+        for player in self.players:
+            text = clutter.Text(config.admin_font, 'Player %s score:' % player.name)
+            text.set_color('white')
+            self.add(text)
 
-            score = clutter.Text(config.admin_font, '0')
-            score.player = i
+            score = clutter.Text(config.admin_font, "%d" % player.score)
+            score.set_color('white')
+            score.player = player
             self.scores.append(score)
             score.set_activatable(True)
             score.set_reactive(True)
             score.set_editable(True)
-            score.connect('button-release-event',
-                lambda actor, event: self.set_key_focus(actor))
             score.connect('activate',
-                lambda actor: self.set_score(actor.player))
-            box.add(score)
+                lambda actor: self.set_score(actor))
+            self.add(score)
             layout.set_fill(score, True, False)
 
+    def set_score(self, score):
+        try:
+            s = int(score.get_text())
+        except ValueError:
+            return
+        score.player.score = s
+        self.update()
 
-        box.add(clutter.Text(config.admin_font, 'Daily Double Wager:'))
+    def update(self):
+        """
+        """
+        for score in self.scores:
+            score.set_text("%d" % score.player.score)
+
+class IdleBox(clutter.Box):
+    """
+    """
+
+    def __init__(self):
+        super(IdleBox, self).__init__(clutter.FlowLayout(clutter.FLOW_VERTICAL))
+
+        self.player_score_box = PlayerScoreBox()
+        self.add(self.player_score_box)
+
+        self.game_board = GameBoard()
+        self.game_board.set_scale(0.6, 0.6)
+        self.add(self.game_board)
+
+    def set_size(self, width, height):
+        super(IdleBox, self).set_size(width, height)
+        self.game_board.set_size(width, height)
+        self.game_board.set_scale(0.6, 0.6)
+
+    def update(self):
+        self.player_score_box.update()
+
+class DailyDoubleWagerBox(clutter.Box):
+    """
+    """
+
+    def __init__(self):
+        super(DailyDoubleWagerBox, self).__init__(clutter.BoxLayout())
+        layout = self.get_layout_manager()
+        self.set_color(config.background_color)
+
+        text = clutter.Text(config.admin_font, 'Daily Double Wager:')
+        text.set_color('white')
+        self.add(text)
         self.wager = clutter.Text(config.admin_font, '0')
+        self.wager.set_color('white')
         self.wager.set_reactive(True)
         self.wager.set_editable(True)
         self.wager.connect('button-release-event',
             lambda actor, event: self.set_key_focus(self.wager))
         self.wager.connect('text-changed',
             lambda actor: game.set_daily_double_wager(self.get_wager()))
-        box.add(self.wager)
+        self.add(self.wager)
         layout.set_fill(self.wager, True, False)
+
+    def get_wager(self):
+        try:
+            return int(self.wager.get_text())
+        except ValueError:
+            return 0
+
+    def update(self):
+        pass
+
+
+class ClueBox(clutter.Box):
+    """
+    Box for holding host clue information.
+    """
+
+    def __init__(self):
+        super(ClueBox, self).__init__(clutter.FlowLayout(clutter.FLOW_VERTICAL))
+        layout = self.get_layout_manager()
+        layout.set_column_spacing(10)
+        layout.set_row_spacing(10)
+        self.set_color(config.background_color)
+
+        # Add clue answer and question.
+        clue_box = clutter.Box(clutter.BoxLayout())
+        self.add(clue_box)
+        clue_layout = clue_box.get_layout_manager()
+        clue_layout.set_vertical(True)
+
+        clue = game.get_selected_clue()
+        text = clutter.Text(config.admin_font_header, "CLUE")
+        text.set_color('white')
+        clue_layout.pack(text, False, False, False,
+                         clutter.BOX_ALIGNMENT_START,
+                         clutter.BOX_ALIGNMENT_CENTER)
+        text = clutter.Text(config.admin_font, "Answer\n%s" % clue.answer)
+        text.set_color('green')
+        clue_layout.pack(text, False, False, False,
+                         clutter.BOX_ALIGNMENT_START,
+                         clutter.BOX_ALIGNMENT_CENTER)
+        text = clutter.Text(config.admin_font, "Question\n%s" % clue.question)
+        text.set_color('red')
+        clue_layout.pack(text, False, False, False,
+                         clutter.BOX_ALIGNMENT_START,
+                         clutter.BOX_ALIGNMENT_CENTER)
+
+        # Add player buzz in information.
+        buzz_box = clutter.Box(clutter.BoxLayout())
+        self.add(buzz_box)
+        buzz_layout = buzz_box.get_layout_manager()
+        buzz_layout.set_vertical(True)
+        text = clutter.Text(config.admin_font_header, 'PLAYER BUZZES')
+        buzz_layout.pack(text, False, False, False,
+                         clutter.BOX_ALIGNMENT_START,
+                         clutter.BOX_ALIGNMENT_CENTER)
+        self.players = []
+        for player in game.get_players():
+            text = clutter.Text(config.admin_font, "Player %s" % player.name)
+            text.set_color('white')
+            text.player = player
+            self.players.append(text)
+            buzz_layout.pack(text, False, False, False,
+                             clutter.BOX_ALIGNMENT_START,
+                             clutter.BOX_ALIGNMENT_CENTER)
+
+    def update(self):
+
+        for player in self.players:
+            if player.player == game.get_buzzed_player():
+                player.set_color('red')
+            else:
+                player.set_color('white')
+
+class Admin(clutter.Stage):
+    """
+    """
+
+    ADMIN_DISPLAY_CLUE = 'ADMIN_DISPLAY_CLUE'
+    ADMIN_IDLE = 'ADMIN_IDLE'
+    ADMIN_INIT = 'ADMIN_INIT'
+
+    def __init__(self):
+        super(Admin, self).__init__()
+
+        self.set_fullscreen(False)
+        self.set_size(640, 480)
+        self.set_user_resizable(True)
+        self.set_color('black')
+
+        self.state = self.ADMIN_INIT
 
         # Connect the callback listeners
         self.connect('key-press-event', self.on_press)
+        self.connect('allocation-changed', self.on_allocation_changed)
 
         self.show()
 
-    def set_score(self, player):
-        score = self.scores[player]
-        print player
-        try:
-            s = int(score.get_text())
-        except ValueError:
-            return
-        game.set_score(player, s)
-        score.set_text('0')
+    def on_allocation_changed(self, stage, box, flags):
+        """
+        """
+        for child in self.get_children():
+            child.set_size(stage.get_width(), stage.get_height())
 
     def on_press(self, actor, event):
         """
@@ -99,9 +233,29 @@ class Admin(clutter.Stage):
         if event.keyval == clutter.keysyms.Escape:
             clutter.main_quit()
 
-    def get_wager(self):
-        try:
-            return int(self.wager.get_text())
-        except ValueError:
-            return 0
+    def on_tick(self):
+        """
+        """
+        for child in self.get_children():
+            child.update()
+
+        new_state = self.state
+        if game.state == game.IDLE:
+            new_state = self.ADMIN_IDLE
+        if game.state == game.DISPLAY_CLUE:
+            new_state = self.ADMIN_DISPLAY_CLUE
+
+        if self.state != new_state:
+            if new_state == self.ADMIN_IDLE:
+                self.remove_all()
+                idle_box = IdleBox()
+                idle_box.set_size(self.get_width(), self.get_height())
+                self.add(idle_box)
+            if new_state == self.ADMIN_DISPLAY_CLUE:
+                self.remove_all()
+                clue_box = ClueBox()
+                clue_box.set_size(self.get_width(), self.get_height())
+                self.add(clue_box)
+
+            self.state = new_state
 

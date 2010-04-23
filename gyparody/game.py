@@ -227,6 +227,8 @@ class Game(object):
         self.update_game_board = False
         self.wager = 0
 
+        self.buzzed_player = None
+
         self.load_final_round()
 
     def load_round(self, round_name):
@@ -303,6 +305,15 @@ class Game(object):
         fh.close()
         self.unmarshall(data)
 
+    def get_buzzed_player(self):
+        """
+        Return the currently buzzed player.
+        """
+        if self.buzzed_player:
+            return self.buzzed_player
+        else:
+            return None
+
     def get_categories(self):
         """
         Return the round's categories.
@@ -318,11 +329,26 @@ class Game(object):
             names.append(category.get_name())
         return names
 
+    def get_selected_clue(self):
+        """
+        Return the currently active clue.
+        """
+        if self.selected_clue:
+            return self.selected_clue
+        else:
+            return None
+
     def get_players(self):
         """
         Return the player objects.
         """
         return self.players
+
+    def get_score(self, player_index):
+        """
+        Returns the score for the player with the given index.
+        """
+        pass
 
     def on_tick(self):
         """
@@ -350,9 +376,13 @@ class Game(object):
         """
         Player buzzer pressed. player_index is 0, 1, or 2
         """
+
+        logging.debug("player index = %s" % player_index)
+        logging.debug("buzzer lock keys = %s" % self.buzzer_lockouts)
+
         if self.state == self.DISPLAY_CLUE:
-            # Player buzzed in too early, store the earliest time their buzzer can be used
-            self.buzzer_lockouts[player_index] = time.time() + config.buzzer_lockout_time
+            # Player buzzed in too early, store their index.
+            self.buzzer_lockouts[player_index] = 0
             logging.debug("Locking out player %d" % player_index)
             return
 
@@ -398,6 +428,8 @@ class Game(object):
 
         # Disable all lit players.
         game_buttons.reset_player_lights()
+        # Disable all game buttons
+        game_buttons.reset_buttons()
 
         logging.debug("Correct answer, Going to DISPLAY_QUESTION state")
         self.state = self.DISPLAY_QUESTION
@@ -419,6 +451,8 @@ class Game(object):
 
         # Disable all lit players.
         game_buttons.reset_player_lights()
+        # Disable all game buttons
+        game_buttons.reset_buttons()
 
         logging.debug("Incorrect answer, Going to AWAIT_BUZZ state")
         self.state = self.AWAIT_BUZZ
@@ -437,9 +471,10 @@ class Game(object):
 
         # Clear the list of players that have buzzed in.
         self.buzzed_players = []
+        # Empty out buzzer lockouts.
+        self.buzzer_lockouts = {}
 
         self.selected_clue = clue
-        self.buzzer_lockouts = {}
         if self.selected_clue.is_daily_double():
             logging.debug("Going to DAILY_DOUBLE_AWAIT_WAGER state")
             self.flash_daily_double = True
@@ -455,6 +490,9 @@ class Game(object):
         if self.state == self.DISPLAY_CLUE:
             # In DISPLAY_CLUE state, unlock the buzzers.
             logging.debug("Unlocking buzzers, going to AWAIT_BUZZ state")
+            # Assign the timeout for each player that buzzed prematurely.
+            for index in self.buzzer_lockouts.keys():
+                self.buzzer_lockouts[index] = time.time() + config.buzzer_lockout_time
             self.state = self.AWAIT_BUZZ
             self.timeout_start = time.time()
         elif self.state == self.AWAIT_ANSWER:

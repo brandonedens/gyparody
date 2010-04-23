@@ -113,15 +113,19 @@ class GameButtons(object):
                     continue
                 self.ring = self.ring[1:] + c
                 if self.ring[:2] == 'GY':
-                    print self.ring
                     if self.ring[2] == '1':
                         self.button_1 = True
                     if self.ring[3] == '1':
                         self.button_2 = True
                     if self.ring[4] == '1':
                         self.button_3 = True
-                    continue
-            return (self.button_1, self.button_2, self.button_3)
+                    if not self.button_1 and not self.button_2 and not self.button_3:
+                        continue
+                    logging.debug("buttons player1 = %s player2 = %s player3 = %s" % (self.button_1,
+                                                                                      self.button_2,
+                                                                                      self.button_3))
+                    return (self.button_1, self.button_2, self.button_3)
+
         return (0, 0, 0)
 
     def reset_buttons(self):
@@ -131,6 +135,8 @@ class GameButtons(object):
         self.button_1 = False
         self.button_2 = False
         self.button_3 = False
+        if self.serial:
+            self.serial.flushInput()
 
     def reset_player_lights(self):
         """

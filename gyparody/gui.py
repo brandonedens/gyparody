@@ -38,13 +38,6 @@ from text import Text
 
 
 ###############################################################################
-## Constants
-###############################################################################
-
-MAIN_STAGE_BACKGROUND_COLOR = clutter.Color(2, 2, 2)
-
-
-###############################################################################
 ## Classes
 ###############################################################################
 
@@ -182,7 +175,6 @@ class FinalRoundOverlay(clutter.Box):
     def is_playing(self):
         """
         """
-        logging.debug("final found music progress %f" % self.music.get_progress())
         playing = False
         if self.music.get_playing() and self.music.get_progress() < 1.0:
             playing = True
@@ -271,7 +263,7 @@ class GUI(clutter.Stage):
         self.gui_state = self.SHOW_GAME_BOARD
 
         # Set the stage background to grey.
-        self.set_color(MAIN_STAGE_BACKGROUND_COLOR)
+        self.set_color(config.stage_background_color)
 
         # Connect callback listeners
         logging.info('Setting up game stage signals.')
@@ -465,6 +457,7 @@ class GUI(clutter.Stage):
         Call back associated with each tick.
         """
         game.on_tick()
+        self.admin.on_tick()
 
         # Send update to player scores.
         self.player_score_box.update()
@@ -550,6 +543,10 @@ class GUI(clutter.Stage):
         if self.gui_state != new_gui_state:
             logging.debug("State %s to %s" % (self.gui_state, new_gui_state))
             if new_gui_state == self.SHOW_CLUE:
+                # Reset the buttons.
+                game_buttons.reset_buttons()
+
+                # We're not displaying clue. Setup the users that are locked out.
                 if game.selected_clue.get_type() == 'audio':
                     self.clue_overlay.set_audio(game.selected_clue.answer['audio'])
                 elif game.selected_clue.get_type() == 'image':

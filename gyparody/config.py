@@ -89,6 +89,8 @@ class Config(object):
         self.player_name_font = "ScaKorinna 10"
         self.player_score_font = "ScaKorinna 18"
 
+        # Stage background color
+        self.stage_background_color = clutter.Color(2, 2, 2)
         # Background color
         self.background_color = clutter.Color(6, 11, 121)
 
@@ -112,7 +114,8 @@ class Config(object):
         self.category_spacing = 10
 
         # Admin font
-        self.admin_font = "Sans"
+        self.admin_font_header = "Sans 26"
+        self.admin_font = "Sans 22"
 
         # Daily double font
         self.daily_double_font = 'Gyparody 96'
