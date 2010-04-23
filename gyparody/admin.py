@@ -90,14 +90,14 @@ class IdleBox(clutter.Box):
         self.player_score_box = PlayerScoreBox()
         self.add(self.player_score_box)
 
-        self.game_board = GameBoard()
-        self.game_board.set_scale(0.6, 0.6)
-        self.add(self.game_board)
+        #self.game_board = GameBoard()
+        #self.game_board.set_scale(0.6, 0.6)
+        #self.add(self.game_board)
 
     def set_size(self, width, height):
         super(IdleBox, self).set_size(width, height)
-        self.game_board.set_size(width, height)
-        self.game_board.set_scale(0.6, 0.6)
+        #self.game_board.set_size(width, height)
+        #self.game_board.set_scale(0.6, 0.6)
 
     def update(self):
         self.player_score_box.update()
