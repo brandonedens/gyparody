@@ -75,6 +75,9 @@ class Admin(clutter.Stage):
             lambda actor: game.set_daily_double_wager(self.get_wager()))
         box.add(self.wager)
 
+        # Connect the callback listeners
+        self.connect('key-press-event', self.on_press)
+
         self.show()
 
     def set_score(self, player):

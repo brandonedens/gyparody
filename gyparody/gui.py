@@ -139,7 +139,7 @@ class ClueOverlay(clutter.Box):
         self.clue_item.set_filename(filename)
         self.clue_item.set_keep_aspect_ratio(True)
         #self.clue_item.set_height(config.fullscreen_height * 0.8)
-        self.clue_item.set_width(config.fullscreen_width * 0.9)
+        self.clue_item.set_width(self.get_width() * 0.9)
         self.add(self.clue_item)
         self.clue_item.set_playing(True)
 
@@ -228,8 +228,6 @@ class GUI(clutter.Stage):
         logging.info('Setting up game stage signals.')
         self.connect('destroy', clutter.main_quit)
         self.connect('key-press-event', self.on_press)
-        self.connect('fullscreen', self.on_fullscreen)
-        self.connect('unfullscreen', self.on_unfullscreen)
         self.connect('button-release-event', self.on_click)
         self.connect('allocation-changed', self.on_allocation_changed)
 
@@ -375,43 +373,18 @@ class GUI(clutter.Stage):
             # Fullscreen play area.
             self.set_fullscreen(not self.get_fullscreen())
 
-    def set_size(self, width, height):
-        """
-        """
-        try:
-            super(GUI, self).set_size(width, height)
-            self.board_box.set_size(width, height)
-            self.game_board.set_size(width * 0.9, height)
-            self.category_overlay.set_size(width, height)
-            self.player_buzz_overlay.set_size(width, height)
-        except AttributeError:
-            # If there is an attribute error then its most likely because
-            # self.game_board did not exist because the stage is first
-            # loading. Therefore we simply pass on this exception as during
-            # loading correctly size of internals will be set.
-            pass
-
     def on_allocation_changed(self, stage, box, flags):
         """
         """
+        logging.debug("self size %d x %d  and stage size %d x %d" % (self.get_width(),
+                                                                     self.get_height(),
+                                                                     stage.get_width(),
+                                                                     stage.get_height()))
         self.clue_overlay.set_size(self.get_width(), self.get_height())
         self.game_board.set_size(self.get_width() * 0.9, self.get_height())
+        self.board_box.set_size(self.get_width(), self.get_height())
         self.category_overlay.set_size(self.get_width(), self.get_height())
         self.player_buzz_overlay.set_size(self.get_width(), self.get_height())
-
-    def on_fullscreen(self, stage):
-        """
-        Signal for when main game stage is fullscreened. This signal resizes
-        all contained elements.
-        """
-        self.set_size(config.fullscreen_width, config.fullscreen_height)
-
-    def on_unfullscreen(self, stage):
-        """
-        Signal for when main game stage is un-fullscreened. This signal resizes
-        all contained elements.
-        """
-        self.set_size(config.screen_width, config.screen_height)
 
     def on_tick(self):
         """

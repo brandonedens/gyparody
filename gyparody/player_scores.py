@@ -45,13 +45,14 @@ class PlayerScore(clutter.Box):
         self.player = player
         layout = self.get_layout_manager()
         layout.set_vertical(True)
-        self.player_name_text = Text(config.player_name_font, player.name)
+        self.player_name_text = Text(config.player_name_font,
+                                     self.player.name)
         layout.pack(self.player_name_text,
                     True, False, False,
                     clutter.BOX_ALIGNMENT_CENTER,
                     clutter.BOX_ALIGNMENT_CENTER)
         self.player_score_text = Text(config.player_score_font,
-                                      "$%d" % player.score)
+                                      "$%d" % self.player.score)
         layout.pack(self.player_score_text,
                     True, False, False,
                     clutter.BOX_ALIGNMENT_CENTER,
@@ -62,14 +63,8 @@ class PlayerScore(clutter.Box):
         """
         Update the score information for player.
         """
-        layout = self.get_layout_manager()
-        self.remove(self.player_score_text)
-        self.player_score_text = Text(config.player_score_font,
-                                      "$%d" % self.player.score)
-        layout.pack(self.player_score_text,
-                    True, True, True,
-                    clutter.BOX_ALIGNMENT_CENTER,
-                    clutter.BOX_ALIGNMENT_CENTER)
+        self.player_score_text.set_text(config.player_score_font,
+                                        "$%d" % self.player.score)
 
 class PlayerScoreBox(clutter.Box):
     """
