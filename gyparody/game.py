@@ -494,6 +494,11 @@ class Game(object):
 
     def adjust_score(self, player, offset):
         self.players[player].score += offset
+        self.dump_scores()
+
+    def set_score(self, player, score):
+        self.players[player].score = score
+        self.dump_scores()
 
     def set_daily_double_wager(self, wager):
         self.wager = wager

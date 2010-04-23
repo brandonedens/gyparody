@@ -48,30 +48,22 @@ class Admin(clutter.Stage):
         box.get_layout_manager().set_vertical(True)
         self.add(box)
 
-        box.add(clutter.Text(config.admin_font, 'Enter value:'))
-
-        self.value = clutter.Text(config.admin_font, '0')
-        self.value.set_reactive(True)
-        self.value.set_editable(True)
-        self.value.connect('button-release-event',
-            lambda actor, event: self.set_key_focus(self.value))
-        box.add(self.value)
-
-        self.add_buttons = []
-        self.sub_buttons = []
+        self.scores = []
         for i in range(3):
-            add = clutter.Text(config.admin_font, 'Add to player %d' % (i+1))
-            add.set_reactive(True)
-            add.connect('button-release-event',
-                lambda actor, event: game.adjust_score(i, self.get_value()))
-            self.add_buttons.append(add)
-            box.add(add)
-            sub = clutter.Text(config.admin_font, 'Subtract from player %d' % (i+1))
-            sub.set_reactive(True)
-            sub.connect('button-release-event',
-                lambda actor, event: game.adjust_score(i, -self.get_value()))
-            self.sub_buttons.append(sub)
-            box.add(sub)
+            box.add(clutter.Text(config.admin_font, 'Set player %d score:' % (i+1)))
+
+            score = clutter.Text(config.admin_font, '%d'%i)
+            score.player = i
+            self.scores.append(score)
+            score.set_activatable(True)
+            score.set_reactive(True)
+            score.set_editable(True)
+            score.connect('button-release-event',
+                lambda actor, event: self.set_key_focus(actor))
+            score.connect('activate',
+                lambda actor: self.set_score(actor.player))
+            box.add(score)
+
 
         box.add(clutter.Text(config.admin_font, 'Daily Double Wager:'))
         self.wager = clutter.Text(config.admin_font, '0')
@@ -85,9 +77,25 @@ class Admin(clutter.Stage):
 
         self.show()
 
-    def get_value(self):
-        return int(self.value.get_text())
+    def set_score(self, player):
+        score = self.scores[player]
+        print player
+        try:
+            s = int(score.get_text())
+        except ValueError:
+            return
+        game.set_score(player, s)
+        score.set_text('0')
+
+    def on_press(self, actor, event):
+        """
+        """
+        if event.keyval == clutter.keysyms.Escape:
+            clutter.main_quit()
 
     def get_wager(self):
-        return int(self.wager.get_text())
+        try:
+            return int(self.wager.get_text())
+        except ValueError:
+            return 0
 
