@@ -66,6 +66,7 @@ class Admin(clutter.Stage):
                 lambda actor, event: game.adjust_score(i, self.get_value()))
             self.add_buttons.append(add)
             box.add(add)
+
             sub = clutter.Text(config.admin_font, 'Subtract from player %d' % (i+1))
             sub.set_reactive(True)
             sub.connect('button-release-event',
@@ -83,7 +84,16 @@ class Admin(clutter.Stage):
             lambda actor: game.set_daily_double_wager(self.get_wager()))
         box.add(self.wager)
 
+        # Connect the callback listeners
+        self.connect('key-press-event', self.on_press)
+
         self.show()
+
+    def on_press(self, actor, event):
+        """
+        """
+        if event.keyval == clutter.keysyms.Escape:
+            clutter.main_quit()
 
     def get_value(self):
         return int(self.value.get_text())
