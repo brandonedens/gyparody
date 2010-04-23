@@ -45,14 +45,15 @@ class Admin(clutter.Stage):
         self.set_user_resizable(False)
 
         box = clutter.Box(clutter.BoxLayout())
-        box.get_layout_manager().set_vertical(True)
+        layout = box.get_layout_manager()
+        layout.set_vertical(True)
         self.add(box)
 
         self.scores = []
         for i in range(3):
             box.add(clutter.Text(config.admin_font, 'Set player %d score:' % (i+1)))
 
-            score = clutter.Text(config.admin_font, '%d'%i)
+            score = clutter.Text(config.admin_font, '0')
             score.player = i
             self.scores.append(score)
             score.set_activatable(True)
@@ -63,6 +64,7 @@ class Admin(clutter.Stage):
             score.connect('activate',
                 lambda actor: self.set_score(actor.player))
             box.add(score)
+            layout.set_fill(score, True, False)
 
 
         box.add(clutter.Text(config.admin_font, 'Daily Double Wager:'))
@@ -74,6 +76,7 @@ class Admin(clutter.Stage):
         self.wager.connect('text-changed',
             lambda actor: game.set_daily_double_wager(self.get_wager()))
         box.add(self.wager)
+        layout.set_fill(self.wager, True, False)
 
         # Connect the callback listeners
         self.connect('key-press-event', self.on_press)
