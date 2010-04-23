@@ -36,9 +36,13 @@ install: build
 
     # Install fonts
 	install -m 644 $(CURDIR)/fonts/gyparody.ttf $(PACKAGE_DIR)/usr/share/fonts/gyparody/
-	install -m 644 $(CURDIR)/fonts/HATTEN.ttf $(PACKAGE_DIR)/usr/share/fonts/gyparody/
+	install -m 644 $(CURDIR)/fonts/hatten.ttf $(PACKAGE_DIR)/usr/share/fonts/gyparody/
 	install -m 644 $(CURDIR)/fonts/scakorinnabold.ttf $(PACKAGE_DIR)/usr/share/fonts/gyparody/
 
+    # Install sounds
+	install -m 644 $(CURDIR)/sounds/daily_double.wav $(PACKAGE_DIR)/usr/share/sounds/gyparody/
+	install -m 644 $(CURDIR)/sounds/final_music.wav $(PACKAGE_DIR)/usr/share/sounds/gyparody/
+	install -m 644 $(CURDIR)/sounds/timeout.wav $(PACKAGE_DIR)/usr/share/sounds/gyparody/
 
     # Install executables
 	install -m 755 $(CURDIR)/bin/gyparody $(PACKAGE_DIR)/usr/bin/gyparody
