@@ -386,6 +386,7 @@ class GUI(clutter.Stage):
         self.board_box.set_size(self.get_width(), self.get_height())
         self.category_overlay.set_size(self.get_width(), self.get_height())
         self.player_buzz_overlay.set_size(self.get_width(), self.get_height())
+        self.daily_double_overlay.set_size(self.get_width(), self.get_height())
 
     def on_tick(self):
         """
@@ -440,16 +441,20 @@ class GUI(clutter.Stage):
                                              'opacity', 0)
         if game.check_flash_daily_double():
             self.daily_double_overlay.set_opacity(255)
-            self.daily_double_overlay.animate(clutter.EASE_IN_CUBIC,
-                                             5000,
-                                             'opacity', 0)
             tex = cluttergst.VideoTexture()
             tex.set_filename(config.sound_daily_double)
             tex.set_playing(True)
+        if game.check_clear_daily_double():
+            self.daily_double_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             1000,
+                                             'opacity', 0)
 
         if game.state == game.IDLE:
             new_gui_state = self.SHOW_GAME_BOARD
-        elif game.state in (game.DISPLAY_CLUE, game.AWAIT_BUZZ, game.AWAIT_ANSWER):
+        elif game.state in (game.DISPLAY_CLUE,
+                            game.AWAIT_BUZZ,
+                            game.AWAIT_ANSWER,
+                            game.DAILY_DOUBLE_AWAIT_WAGER):
             new_gui_state = self.SHOW_CLUE
         elif game.state == game.DISPLAY_QUESTION:
             new_gui_state = self.SHOW_QUESTION

@@ -186,6 +186,7 @@ class Game(object):
     DISPLAY_QUESTION = 'DISPLAY_QUESTION'
     AWAIT_BUZZ = 'AWAIT_BUZZ'
     AWAIT_ANSWER = 'AWAIT_ANSWER'
+    DAILY_DOUBLE_AWAIT_WAGER = 'DAILY_DOUBLE_AWAIT_WAGER'
 
     def __init__(self):
         """
@@ -206,6 +207,7 @@ class Game(object):
         self.flash_player_name = False
         self.flash_player_score = False
         self.flash_daily_double = False
+        self.clear_daily_double = False
         self.update_game_board = False
         self.wager = 0
 
@@ -409,12 +411,15 @@ class Game(object):
         # Clear the list of players that have buzzed in.
         self.buzzed_players = []
 
-        logging.debug("Going to DISPLAY_CLUE state")
         self.selected_clue = clue
         self.buzzer_lockouts = {}
-        self.state = self.DISPLAY_CLUE
         if self.selected_clue.is_daily_double():
+            logging.debug("Going to DAILY_DOUBLE_AWAIT_WAGER state")
             self.flash_daily_double = True
+            self.state = self.DAILY_DOUBLE_AWAIT_WAGER
+        else:
+            logging.debug("Going to DISPLAY_CLUE state")
+            self.state = self.DISPLAY_CLUE
 
     def bar(self):
         """
@@ -434,6 +439,10 @@ class Game(object):
             logging.debug("Going to IDLE state")
             self.state = self.IDLE
             self.handle_round_completion()
+        elif self.state == self.DAILY_DOUBLE_AWAIT_WAGER:
+            logging.debug("Going to DISPLAY_CLUE, clear daily double")
+            self.state = self.DISPLAY_CLUE
+            self.clear_daily_double = True
 
     def cancel(self):
         if self.state == self.DISPLAY_QUESTION:
@@ -470,6 +479,11 @@ class Game(object):
     def check_flash_daily_double(self):
         flag = self.flash_daily_double
         self.flash_daily_double = False
+        return flag
+
+    def check_clear_daily_double(self):
+        flag = self.clear_daily_double
+        self.clear_daily_double = False
         return flag
 
     def check_update_game_board(self):
