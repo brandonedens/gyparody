@@ -148,6 +148,34 @@ class ClueOverlay(clutter.Box):
         """
         pass
 
+class DailyDoubleOverlay(clutter.Box):
+    """
+    """
+
+    def __init__(self):
+        """
+        """
+        super(DailyDoubleOverlay, self).__init__(clutter.BinLayout(
+            clutter.BIN_ALIGNMENT_CENTER,
+            clutter.BIN_ALIGNMENT_CENTER))
+        self.set_color(config.square_background_color)
+        self.text = Text(config.daily_double_font, 'Daily\nDouble')
+        self.add(self.text)
+
+class FinalRoundOverlay(clutter.Box):
+    """
+    """
+
+    def __init__(self):
+        """
+        """
+        super(FinalRoundOverlay, self).__init__(clutter.BinLayout(
+            clutter.BIN_ALIGNMENT_CENTER,
+            clutter.BIN_ALIGNMENT_CENTER))
+        self.set_color(config.square_background_color)
+        self.text = Text(config.final_round_font, 'Final\nRound')
+        self.add(self.text)
+
 class PlayerBuzzOverlay(clutter.Box):
     """
     An overlay for player buzz in information.
@@ -190,20 +218,6 @@ class PlayerScoreOverlay(clutter.Box):
         self.text = Text(config.player_overlay_font, text)
         self.add(self.text)
 
-class DailyDoubleOverlay(clutter.Box):
-    """
-    """
-
-    def __init__(self):
-        """
-        """
-        super(DailyDoubleOverlay, self).__init__(clutter.BinLayout(
-            clutter.BIN_ALIGNMENT_CENTER,
-            clutter.BIN_ALIGNMENT_CENTER))
-        self.set_color(config.square_background_color)
-        self.text = Text(config.player_overlay_font, 'Daily\nDouble')
-        self.add(self.text)
-
 class GUI(clutter.Stage):
     """
     """
@@ -232,17 +246,21 @@ class GUI(clutter.Stage):
         self.connect('allocation-changed', self.on_allocation_changed)
 
         self.board_box = clutter.Box(clutter.BoxLayout())
+        board_box_layout = self.board_box.get_layout_manager()
 
         # Instantiate the game board which is the collection of squares to show
         # on screen.
         self.game_board = GameBoard()
-        self.board_box.add(self.game_board)
+        board_box_layout.pack(self.game_board,
+                              True, True, True,
+                              clutter.BOX_ALIGNMENT_CENTER,
+                              clutter.BOX_ALIGNMENT_CENTER)
 
         # Determine whether or not to display player scores.
         self.player_score_box = None
         if config.display_player_scores:
             self.player_score_box = PlayerScoreBox(game.get_players())
-            board_box_layout = self.board_box.get_layout_manager()
+            self.player_score_box.set_width(0.1 * self.get_width())
             if config.player_scores_position == 'east':
                 layout = self.player_score_box.get_layout_manager()
                 layout.set_vertical(True)
@@ -382,7 +400,15 @@ class GUI(clutter.Stage):
                                                                      stage.get_height()))
         self.clue_overlay.set_size(self.get_width(), self.get_height())
         self.daily_double_overlay.set_size(self.get_width(), self.get_height())
-        self.game_board.set_size(self.get_width() * 0.9, self.get_height())
+        self.board_box.set_size(self.get_width(), self.get_height())
+        if config.display_player_scores:
+            self.player_score_box.set_size(0.1 * self.get_width(),
+                                           self.get_height())
+            self.game_board.set_size(0.9 * self.get_width(),
+                                     self.get_height())
+        else:
+            self.game_board.set_size(self.get_width,
+                                     self.get_height())
         self.board_box.set_size(self.get_width(), self.get_height())
         self.category_overlay.set_size(self.get_width(), self.get_height())
         self.player_buzz_overlay.set_size(self.get_width(), self.get_height())
@@ -414,10 +440,15 @@ class GUI(clutter.Stage):
         Update the GUI based on the current state of the game.
         """
         if game.check_update_game_board():
-            self.remove(self.game_board)
+            self.board_box.remove(self.game_board)
             self.game_board = GameBoard()
-            self.game_board.set_size(self.get_width(), self.get_height())
-            self.add(self.game_board)
+            self.board_box.add(self.game_board)
+            if config.display_player_scores:
+                self.game_board.set_size(0.9 * self.get_width(),
+                                         self.get_height())
+            else:
+                self.game_board.set_size(self.get_width,
+                                         self.get_height())
             self.game_board.lower_bottom()
         if game.check_timeout_beep():
             logging.debug("****************** BZZZZZT! ******************")
