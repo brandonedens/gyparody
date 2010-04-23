@@ -397,6 +397,10 @@ class GUI(clutter.Stage):
         Call back associated with each tick.
         """
         game.on_tick()
+
+        # Send update to player scores.
+        self.player_score_box.update()
+
         # Read incoming game button presses if they exist.
         player1, player2, player3 = game_buttons.read()
         if player1:
