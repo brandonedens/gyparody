@@ -73,8 +73,21 @@ class Admin(clutter.Stage):
             self.sub_buttons.append(sub)
             box.add(sub)
 
+        box.add(clutter.Text(config.admin_font, 'Daily Double Wager:'))
+        self.wager = clutter.Text(config.admin_font, '0')
+        self.wager.set_reactive(True)
+        self.wager.set_editable(True)
+        self.wager.connect('button-release-event',
+            lambda actor, event: self.set_key_focus(self.wager))
+        self.wager.connect('text-changed',
+            lambda actor: game.set_daily_double_wager(self.get_wager()))
+        box.add(self.wager)
+
         self.show()
 
     def get_value(self):
         return int(self.value.get_text())
+
+    def get_wager(self):
+        return int(self.wager.get_text())
 

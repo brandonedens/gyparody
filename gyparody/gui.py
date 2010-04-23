@@ -190,6 +190,20 @@ class PlayerScoreOverlay(clutter.Box):
         self.text = Text(config.player_overlay_font, text)
         self.add(self.text)
 
+class DailyDoubleOverlay(clutter.Box):
+    """
+    """
+
+    def __init__(self):
+        """
+        """
+        super(DailyDoubleOverlay, self).__init__(clutter.BinLayout(
+            clutter.BIN_ALIGNMENT_CENTER,
+            clutter.BIN_ALIGNMENT_CENTER))
+        self.set_color(config.square_background_color)
+        self.text = Text(config.player_overlay_font, 'Daily\nDouble')
+        self.add(self.text)
+
 class GUI(clutter.Stage):
     """
     """
@@ -275,6 +289,13 @@ class GUI(clutter.Stage):
                                           self.get_height())
         self.player_score_overlay.set_opacity(0)
         self.add(self.player_score_overlay)
+
+        # Overlay box for daily double.
+        self.daily_double_overlay = DailyDoubleOverlay()
+        self.daily_double_overlay.set_size(self.get_width(),
+                                          self.get_height())
+        self.daily_double_overlay.set_opacity(0)
+        self.add(self.daily_double_overlay)
 
         # Set a default stage size.
         self.set_fullscreen(False)
@@ -443,6 +464,14 @@ class GUI(clutter.Stage):
             self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
                                              1000,
                                              'opacity', 0)
+        if game.check_flash_daily_double():
+            self.daily_double_overlay.set_opacity(255)
+            self.daily_double_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             5000,
+                                             'opacity', 0)
+            tex = cluttergst.VideoTexture()
+            tex.set_filename(config.sound_daily_double)
+            tex.set_playing(True)
 
         if game.state == game.IDLE:
             new_gui_state = self.SHOW_GAME_BOARD

@@ -34,9 +34,10 @@ from game_buttons import game_buttons
 
 
 ###############################################################################
-## Constants
+## Globals
 ###############################################################################
 
+is_round_2 = [False]
 
 ###############################################################################
 ## Classes
@@ -61,7 +62,7 @@ class Player(object):
 
 class Clue(object):
 
-    def __init__(self, answer, question, value, state='unanswered'):
+    def __init__(self, answer, question, value, state='unanswered', dailydouble=False):
         """
         """
         # Answer state is one of:
@@ -70,6 +71,7 @@ class Clue(object):
         self.value = value
         self.answer = answer
         self.question = question
+        self.dailydouble = dailydouble
 
     def __str__(self):
         """
@@ -118,6 +120,9 @@ class Clue(object):
         except KeyError:
             pass
 
+    def is_daily_double(self):
+        return self.dailydouble
+
     def marshall(self):
         """
         """
@@ -126,6 +131,7 @@ class Clue(object):
         data['value'] = self.value
         data['answer'] = self.answer
         data['question'] = self.question
+        data['dailydouble'] = self.dailydouble
         return data
 
 class Category(object):
@@ -137,14 +143,17 @@ class Category(object):
         self.name = name
         for i in xrange(len(category_data)):
             clue_data = category_data[i]
-            if True: # round 1
+            dd = clue_data.has_key('dailydouble')
+            if not is_round_2[0]: # round 1
                 clue = Clue(clue_data['answer'],
                             clue_data['question'],
-                            (200 * (i + 1)))
-            elif False: # round 2
+                            (200 * (i + 1)),
+                            dailydouble=dd)
+            else: # round 2
                 clue = Clue(clue_data['answer'],
                                 clue_data['question'],
-                                (400 * (i + 1)))
+                                (400 * (i + 1)),
+                                dailydouble=dd)
             self.clues.append(clue)
 
     def __str__(self):
@@ -196,14 +205,18 @@ class Game(object):
         self.timeout_beep = False
         self.flash_player_name = False
         self.flash_player_score = False
+        self.flash_daily_double = False
         self.update_game_board = False
+        self.wager = 0
 
     def load_round(self, round_name):
         self.current_round = round_name
         if self.current_round == 'round1':
             filename = config.round_1_data
+            is_round_2[0] = False
         elif self.current_round == 'round2':
             filename = config.round_2_data
+            is_round_2[0] = True
         else:
             logging.error('unknown round')
         round_file = open(filename, 'r')
@@ -346,7 +359,11 @@ class Game(object):
             logging.error("Cannot answer, not in AWAIT_ANSWER")
             return
 
-        self.players[self.buzzed_player].score += self.selected_clue.value
+        if self.selected_clue.is_daily_double():
+            self.players[self.buzzed_player].score += self.wager
+        else:
+            self.players[self.buzzed_player].score += self.selected_clue.value
+        self.dump_scores()
 
         # Disable all lit players.
         game_buttons.reset_player_lights()
@@ -363,7 +380,11 @@ class Game(object):
             logging.error("Cannot answer, not in AWAIT_ANSWER")
             return
 
-        self.players[self.buzzed_player].score -= self.selected_clue.value
+        if self.selected_clue.is_daily_double():
+            self.players[self.buzzed_player].score -= self.wager
+        else:
+            self.players[self.buzzed_player].score -= self.selected_clue.value
+        self.dump_scores()
 
         # Disable all lit players.
         game_buttons.reset_player_lights()
@@ -390,6 +411,8 @@ class Game(object):
         self.selected_clue = clue
         self.buzzer_lockouts = {}
         self.state = self.DISPLAY_CLUE
+        if self.selected_clue.is_daily_double():
+            self.flash_daily_double = True
 
     def bar(self):
         """
@@ -442,6 +465,11 @@ class Game(object):
         self.flash_player_score = False
         return flag
 
+    def check_flash_daily_double(self):
+        flag = self.flash_daily_double
+        self.flash_daily_double = False
+        return flag
+
     def check_update_game_board(self):
         flag = self.update_game_board
         self.update_game_board = False
@@ -464,6 +492,15 @@ class Game(object):
 
     def adjust_score(self, player, offset):
         self.players[player].score += offset
+
+    def set_daily_double_wager(self, wager):
+        self.wager = wager
+
+    def dump_scores(self):
+        s = ''
+        for player in self.players:
+            s += '%s: %d, ' % (player.name, player.score)
+        logging.info(s)
 
 ###############################################################################
 ## Statements
