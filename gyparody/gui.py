@@ -32,6 +32,7 @@ from game import game
 from game_board import GameBoard
 from game_board import ClueSquare
 from game_buttons import game_buttons
+from player_scores import PlayerScore, PlayerScoreBox
 from text import Text
 
 
@@ -99,9 +100,9 @@ class ClueOverlay(clutter.Box):
         super(ClueOverlay, self).__init__(clutter.BinLayout(
             clutter.BIN_ALIGNMENT_CENTER,
             clutter.BIN_ALIGNMENT_CENTER))
-        self.set_size(1, 1)
         self.set_color(config.square_background_color)
         self.clue_item = Text('', '')
+        self.clue_item.set_size(self.get_width(), self.get_height())
 
     def set_audio(self, filename):
         """
@@ -111,6 +112,7 @@ class ClueOverlay(clutter.Box):
         tex.set_filename(filename)
         tex.set_playing(True)
         self.clue_item = Text(config.clue_overlay_font, 'Audio File')
+        self.clue_item.set_size(self.get_width(), self.get_height())
         self.add(self.clue_item)
 
     def set_image(self, filename):
@@ -124,7 +126,8 @@ class ClueOverlay(clutter.Box):
         """
         """
         self.remove(self.clue_item)
-        self.clue_item = Text(config.clue_overlay_font, text)
+        self.clue_item.set_text(config.clue_overlay_font, text)
+        self.clue_item.set_size(self.get_width(), self.get_height())
         self.add(self.clue_item)
 
     def set_video(self, filename):
@@ -139,7 +142,10 @@ class ClueOverlay(clutter.Box):
         self.add(self.clue_item)
         self.clue_item.set_playing(True)
 
-clue_overlay = ClueOverlay()
+    def repeat(self):
+        """
+        """
+        pass
 
 class PlayerBuzzOverlay(clutter.Box):
     """
@@ -183,7 +189,6 @@ class PlayerScoreOverlay(clutter.Box):
         self.text = Text(config.player_overlay_font, text)
         self.add(self.text)
 
-
 class GUI(clutter.Stage):
     """
     """
@@ -209,13 +214,45 @@ class GUI(clutter.Stage):
         self.connect('fullscreen', self.on_fullscreen)
         self.connect('unfullscreen', self.on_unfullscreen)
         self.connect('button-release-event', self.on_click)
+        self.connect('allocation-changed', self.on_allocation_changed)
 
+        self.board_box = clutter.Box(clutter.BoxLayout())
+
+        # Instantiate the game board which is the collection of squares to show
+        # on screen.
         self.game_board = GameBoard()
-        self.add(self.game_board)
+        self.board_box.add(self.game_board)
+
+        # Determine whether or not to display player scores.
+        self.player_score_box = None
+        if config.display_player_scores:
+            self.player_score_box = PlayerScoreBox(game.get_players())
+            board_box_layout = self.board_box.get_layout_manager()
+            if config.player_scores_position == 'east':
+                layout = self.player_score_box.get_layout_manager()
+                layout.set_vertical(True)
+                board_box_layout.pack(self.player_score_box,
+                                      True, True, True,
+                                      clutter.BOX_ALIGNMENT_CENTER,
+                                      clutter.BOX_ALIGNMENT_CENTER)
+            if config.player_scores_position == 'south':
+                layout = self.player_score_box.get_layout_manager()
+                layout.set_vertical(False)
+                board_box_layout.pack(self.player_score_box,
+                                      True, True, True,
+                                      clutter.BOX_ALIGNMENT_CENTER,
+                                      clutter.BOX_ALIGNMENT_CENTER)
+            else:
+                self.board_box.add(self.player_score_box)
+
+        # Add the box with the board in it to the screen.
+        self.add(self.board_box)
 
         # Overlay box for displaying clue information and answers
-        self.clue_overlay = clue_overlay
+        self.clue_overlay = ClueOverlay()
+        self.clue_overlay.set_size(self.get_width(), self.get_height())
         self.add(self.clue_overlay)
+        self.clue_overlay.set_opacity(0)
 
         # Overlay box for display category information.
         self.category_overlay = CategoryOverlay()
@@ -319,7 +356,8 @@ class GUI(clutter.Stage):
         """
         try:
             super(GUI, self).set_size(width, height)
-            self.game_board.set_size(width, height)
+            self.board_box.set_size(width, height)
+            self.game_board.set_size(width * 0.9, height)
             self.category_overlay.set_size(width, height)
             self.player_buzz_overlay.set_size(width, height)
         except AttributeError:
@@ -328,6 +366,14 @@ class GUI(clutter.Stage):
             # loading. Therefore we simply pass on this exception as during
             # loading correctly size of internals will be set.
             pass
+
+    def on_allocation_changed(self, stage, box, flags):
+        """
+        """
+        self.clue_overlay.set_size(self.get_width(), self.get_height())
+        self.game_board.set_size(self.get_width() * 0.9, self.get_height())
+        self.category_overlay.set_size(self.get_width(), self.get_height())
+        self.player_buzz_overlay.set_size(self.get_width(), self.get_height())
 
     def on_fullscreen(self, stage):
         """
@@ -412,17 +458,18 @@ class GUI(clutter.Stage):
                 elif game.selected_clue.get_type() == 'video':
                     self.clue_overlay.set_video(game.selected_clue.answer['video'])
                 self.clue_overlay.set_opacity(255)
+                self.clue_overlay.set_scale(0.1, 0.1)
                 self.clue_overlay.animate(clutter.LINEAR,
                                           500,
-                                          'width', self.get_width(),
-                                          'height', self.get_height())
+                                          'scale-x', 1,
+                                          'scale-y', 1)
             elif new_gui_state == self.SHOW_QUESTION:
                 self.clue_overlay.set_text(game.selected_clue.question)
                 self.clue_overlay.set_opacity(255)
                 self.clue_overlay.animate(clutter.LINEAR,
                                           500,
-                                          'width', self.get_width(),
-                                          'height', self.get_height())
+                                          'scale-x', 1,
+                                          'scale-y', 1)
             elif new_gui_state == self.SHOW_GAME_BOARD:
                 logging.debug("Hiding clue overlay")
                 self.clue_overlay.set_opacity(0)

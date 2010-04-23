@@ -82,6 +82,13 @@ class Config(object):
         self.fullscreen_width = 1366
         self.fullscreen_height = 768
 
+        # Player scores on the main screen
+        self.display_player_scores = True
+        # Player scores position
+        self.player_scores_position = 'east'
+        self.player_name_font = "ScaKorinna 10"
+        self.player_score_font = "ScaKorinna 18"
+
         # Background color
         self.background_color = clutter.Color(6, 11, 121)
 

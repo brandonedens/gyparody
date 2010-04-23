@@ -274,6 +274,12 @@ class Game(object):
             names.append(category.get_name())
         return names
 
+    def get_players(self):
+        """
+        Return the player objects.
+        """
+        return self.players
+
     def on_tick(self):
         """
         Game tick.

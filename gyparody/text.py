@@ -59,8 +59,6 @@ class Text(clutter.Box):
         self.add(self.shadow)
         self.add(self.text)
 
-        self.connect('paint', self.on_paint)
-
     def font_size(self):
         """
         Return the font size or the number of points for the font.
@@ -71,15 +69,6 @@ class Text(clutter.Box):
         if match:
             font_size = int(match.group().strip())
         return font_size
-
-    def on_paint(self, actor):
-        """
-        Update text and shadow on paint.
-        """
-        self.text.set_width(self.get_width())
-        self.shadow.set_width(self.get_width())
-        offset = int(self.font_size() / 24) + 2
-        self.shadow.set_position(offset, offset)
 
     def set_background_color(self, color):
         """
