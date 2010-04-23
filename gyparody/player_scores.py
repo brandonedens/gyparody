@@ -75,7 +75,6 @@ class PlayerScoreBox(clutter.Box):
         """
         """
         super(PlayerScoreBox, self).__init__(clutter.BoxLayout())
-        self.set_color(clutter.Color(0, 255, 0))
         layout = self.get_layout_manager()
         layout.set_vertical(True)
         layout.set_spacing(30)
