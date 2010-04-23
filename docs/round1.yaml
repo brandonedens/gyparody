@@ -15,14 +15,14 @@
     - answer: SQL
       question: What is Structured Query Language?
     - answer: GNU
-      question: What is GNU\'s Not Unix?
+      question: What is GNU's Not Unix?
       dailydouble: Yes
     - answer: GNU
-      question: What is GNU\'s Not Unix?
+      question: What is GNU's Not Unix?
     - answer: GNU
-      question: What is GNU\'s Not Unix?
+      question: What is GNU's Not Unix?
     - answer: GNU
-      question: What is GNU\'s Not Unix?
+      question: What is GNU's Not Unix?
 
 - Crypto:
     - answer: This algorithm developed by Schneier in 1993 is also the mascot animal for OpenBSD
