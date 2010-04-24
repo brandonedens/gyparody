@@ -247,6 +247,14 @@ class ClueBox(clutter.Box):
             self.add(dd_box)
             dd_layout = dd_box.get_layout_manager()
             dd_layout.set_vertical(True)
+            for player in game.get_players():
+                text = clutter.Text(config.admin_font, "Player %s" % player.name)
+                text.set_color('white')
+                text.player = player
+                text.set_reactive(True)
+                text.connect('button-release-event',
+                             lambda actor, event: self.choose_team(actor))
+                dd_box.add(text)
             text = clutter.Text(config.admin_font, 'Daily Double Wager:')
             text.set_color('white')
             dd_box.add(text)
@@ -258,6 +266,13 @@ class ClueBox(clutter.Box):
                 lambda actor: game.set_daily_double_wager(self.get_wager()))
             dd_box.add(self.wager)
             dd_layout.set_fill(self.wager, True, False)
+
+    def choose_team(self, text):
+        """
+        """
+        player = text.player
+        logging.debug("Chose daily double player %s" % player.name)
+        game.set_buzzed_player(game.get_player_index(player))
 
     def get_wager(self):
         try:

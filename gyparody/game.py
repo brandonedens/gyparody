@@ -202,6 +202,7 @@ class Game(object):
     AWAIT_BUZZ = 'AWAIT_BUZZ'
     AWAIT_ANSWER = 'AWAIT_ANSWER'
     DAILY_DOUBLE_AWAIT_WAGER = 'DAILY_DOUBLE_AWAIT_WAGER'
+    DAILY_DOUBLE_SHOW_CLUE = 'DAILY_DOUBLE_SHOW_CLUE'
 
     def __init__(self):
         """
@@ -314,6 +315,18 @@ class Game(object):
             return self.buzzed_player
         else:
             return None
+
+    def get_player_index(self, player):
+        """
+        Given a player return that player's index.
+        """
+        self.players.index(player)
+
+    def set_buzzed_player(self, index):
+        """
+        Set the buzzed player which is an index 0, 1, 2.
+        """
+        self.buzzed_player = index
 
     def get_categories(self):
         """
@@ -509,9 +522,12 @@ class Game(object):
             self.state = self.IDLE
             self.handle_round_completion()
         elif self.state == self.DAILY_DOUBLE_AWAIT_WAGER:
-            logging.debug("Going to AWAIT_BUZZ, clear daily double")
-            self.state = self.AWAIT_BUZZ
+            logging.debug("Going to DAILY_DOUBLE_SHOW_CLUE, clear daily double")
+            self.state = self.DAILY_DOUBLE_SHOW_CLUE
             self.clear_daily_double = True
+        elif self.state == self.DAILY_DOUBLE_SHOW_CLUE:
+            logging.debug("Going to AWAIT_ANSWER")
+            self.state = self.AWAIT_ANSWER
         elif self.state == self.FINAL_ROUND:
             logging.debug('Going to FINAL_ROUND_WAGER, clear final round')
             self.state = self.FINAL_ROUND_WAGER
