@@ -356,15 +356,6 @@ class GUI(clutter.Stage):
         self.player_score_overlay.set_opacity(0)
         self.add(self.player_score_overlay)
 
-        # Overlay box for displaying all player scores.
-        self.all_player_scores_overlay = AllPlayerScoresOverlay()
-        self.all_player_scores_overlay.set_size(self.get_width(),
-                                          self.get_height())
-        self.all_player_scores_overlay.set_opacity(0)
-        self.add(self.all_player_scores_overlay)
-
-        self.flashing_scores = False
-
         # Overlay box for daily double.
         self.daily_double_overlay = DailyDoubleOverlay()
         self.daily_double_overlay.set_size(self.get_width(),
@@ -378,6 +369,15 @@ class GUI(clutter.Stage):
                                           self.get_height())
         self.final_round_overlay.set_opacity(0)
         self.add(self.final_round_overlay)
+
+        # Overlay box for displaying all player scores.
+        self.all_player_scores_overlay = AllPlayerScoresOverlay()
+        self.all_player_scores_overlay.set_size(self.get_width(),
+                                          self.get_height())
+        self.all_player_scores_overlay.set_opacity(0)
+        self.add(self.all_player_scores_overlay)
+
+        self.flashing_scores = False
 
         # Set a default stage size.
         self.set_fullscreen(False)

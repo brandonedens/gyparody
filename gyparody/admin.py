@@ -115,18 +115,20 @@ class FinalJeopardyBox(clutter.Box):
             correct = clutter.Text(config.admin_font, "CORRECT")
             correct.set_color('green')
             correct.player = player
+            correct.wager = wager
             correct.set_reactive(True)
-            correct.connect('activate',
-                            lambda actor: self.correct(actor))
+            correct.connect('button-release-event',
+                            lambda actor, event: self.correct(actor))
             self.add(correct)
             layout.set_fill(correct, True, False)
 
             wrong = clutter.Text(config.admin_font, "WRONG")
             wrong.set_color('red')
             wrong.player = player
+            wrong.wager = wager
             wrong.set_reactive(True)
-            wrong.connect('activate',
-                          lambda actor: self.wrong(actor))
+            wrong.connect('button-release-event',
+                          lambda actor, event: self.wrong(actor))
             self.add(wrong)
             layout.set_fill(wrong, True, False)
 
@@ -137,18 +139,20 @@ class FinalJeopardyBox(clutter.Box):
             return
         wager.value = w
 
-    def correct(self, wager):
+    def correct(self, actor):
         """
         """
+        wager = actor.wager
         logging.info("Final jeopardy player %s ($%d) correct. Wager value = %d" % (wager.player.name,
                                                                                    wager.player.score,
                                                                                    wager.value))
         wager.player.score += wager.value
         logging.info("Player %s score now %d" % (wager.player.name, wager.player.score))
 
-    def wrong(self, wager):
+    def wrong(self, actor):
         """
         """
+        wager = actor.wager
         logging.info("Final jeopardy player %s ($%d) wrong. Wager value = %d" % (wager.player.name,
                                                                                  wager.player.score,
                                                                                  wager.value))
