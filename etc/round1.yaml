@@ -1,0 +1,67 @@
+---
+- Protocols:
+    - answer: It's like UDP but it's reliable...
+      question: TCP
+      dailydouble: True
+    - answer:  A protocol that routes the internet
+      question: BGP
+    - answer: A multicast protocol can be used for online streaming video and gaming.
+      question: IGMP
+    - answer:  A legacy protocol runs the world wide telephony and cellular network
+      question: SS7
+    - answer:  A serial communications protocol for programmable logic controllers
+      question: MODBUS
+
+- S Words:
+    - answer: A worm from 2002 that exploited an OpenSSL buffer overflow.
+      question: Slapper Worm
+    - answer: Mark Russvovocnchfdkjh is credit with creating this popular windows tool
+      question: Sysinternals
+    - answer: Pronounced "scuzzy" it's an acronym for these words...
+      question: Small Computer System Interface
+    - answer: Skalia is the name of the mascot of what popular database package
+      question: MYSQL
+    - answer: The zOS package manager
+      question: SMP/E
+
+- Fake Emails for Failures:
+    - answer: 'From: Concerned Consumer  To: Toyota, "ARRRRGGGGGHHHH **SQEEEEL**"'
+      question: Toyota
+    - answer:  "Hey Comrad, Are you sure this canadian software has no bugs? It's really import::EXPLOSION::"
+      question: Russian Gas Line Explosion
+    - answer: 'NASA to the Canadians; Re: measurement conversions: "you did it wrong"'
+      question: Mars Crash
+    - answer: 'June 13, 1994 From: Thomas Nicely, To: INTEL "where did you guys learn to divide?"'
+      question: Pentium FDIV bug
+    - answer: 'From Bill Gates, To: Windows Team "Windows 95 scanner support, you did it wrong"'
+      question: Win95 demo crash
+
+- Shock Images:
+    - answer:
+        image: './shock/0.jpg'
+      question: 1man1jar
+    - answer:
+        image: './shock/2girls1cup-gross.JPG'
+      question: 2 Girls 1 Cup
+    - answer:
+        image: './shock/tubgirl.jpg'
+      question: Tubgirl
+    - answer:
+        image: './shock/vlcsnap-361029.png'
+      question: Swap.AVI
+    - answer:
+        image: './shock/lemonparty.jpg'
+      question: Lemonparty
+
+- Hashes and Encodings of the word QUAHOGCON:
+    - answer: UXVhaG9nY29uCg==
+      question: Base64
+    - answer: dhnubtpba
+      question: Rot13
+    - answer: de27e134 b54cd808 af7ae6e9 38a0dab 81fe601dc
+      question: SHA-1
+    - answer: 717561686f67636f6e
+      question: Hex
+    - answer: 4F267614 B5F76081 8358F3D 2C80C1DC5
+      question: LMHash
+

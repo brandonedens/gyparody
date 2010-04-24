@@ -1,0 +1,67 @@
+---
+- Tools:
+    - answer: HDMoore created this tool to hack shit
+      question: Metasploit
+    - answer: is a programming tool for memory debugging comes from the main entrance to Valhalla  in Norse mythology.
+      question: Valgrind
+    - answer: Web app test tool named after a bodily function
+      question: Burp
+    - answer: Made by hobbit, used for pretty much everything
+      question: Netcat
+    - answer: DHS funded this IDS project.
+      question: Seuricata
+
+- Famous Chests:
+    - answer:
+        image: './chests/Steve-jobs-apple.jpg'
+      question: Steve Jobs
+    - answer:
+        image: './chests/bill-gates.jpg'
+      question: Bill Gates
+    - answer:
+        image: './chests/dan-kaminsky.jpg'
+      question: <3 <3 Dan Kaminsky <3 <3
+    - answer:
+        image: './chests/nortion.jpg'
+      question: Norton dude
+    - answer:
+        image: './chests/dragorn.jpg'
+      question: DRAGORN <3 <3 <3 <3 <3
+
+- Potent Potables:
+    - answer: This HIGHLY caffeinated soda is a staple of early hackers
+      question: JOLT
+      dailydouble: True
+    - answer: This drink originated from an RPG
+      question: Mana Potion
+    - answer: The bottle is "Ribbed" for YOUR pleasure
+      question: Bawls
+    - answer: The motto of this drink translates to "you'll get used to it"
+      question: Club Mate
+    - answer: Half the size yet more expensive than redbull, tastes like shit, lasts for hours.
+      question: 5 Hour Energy
+
+- Know your Services:
+    - answer: Gopher
+      question: 70 TCP+UDP
+    - answer: shell/cmd
+      question: 514 TCP
+    - answer: AppleTalk Echo Protocol
+      question: 4 UDP
+    - answer: Descent 3
+      question: 2092 TCP+UDP
+    - answer: Resource Location/rlp
+      question: 39 TCP+UDP
+
+- ConQuestions:
+    - answer: Concrete in Toilet
+      question: Defcon
+    - answer: Original took place in a hotel in San Diego
+      question: Toorcon
+    - answer: European Hacker organization that has been around for 26 years
+      question: CCC
+    - answer: Who was the "burn the witch" chant about at Defcon 15
+      question: Dateline Reporter at defcon
+    - answer: BEST NEW HACKER CON EVER
+      question: QUAHOG CON 8===D :^)
+
