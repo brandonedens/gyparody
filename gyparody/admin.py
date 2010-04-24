@@ -77,8 +77,90 @@ class PlayerScoreBox(clutter.Box):
     def update(self):
         """
         """
-        for score in self.scores:
-            score.set_text("%d" % score.player.score)
+        pass
+        #for score in self.scores:
+        #    score.set_text("%d" % score.player.score)
+
+class FinalJeopardyBox(clutter.Box):
+
+    def __init__(self):
+        super(FinalJeopardyBox, self).__init__(clutter.BoxLayout())
+
+        self.set_color(config.background_color)
+        layout = self.get_layout_manager()
+        layout.set_vertical(True)
+
+        text = clutter.Text(config.admin_font_header, "FINAL JEOPARDY")
+        self.add(text)
+
+        self.players = game.get_players()
+        for player in self.players:
+            text = clutter.Text(config.admin_font, 'Player %s ($%d) wager:' % (player.name,
+                                                                               player.score))
+            text.set_color('white')
+            self.add(text)
+
+            wager = clutter.Text(config.admin_font, "0")
+            wager.set_color('white')
+            wager.player = player
+            wager.value = 0
+            wager.set_activatable(True)
+            wager.set_reactive(True)
+            wager.set_editable(True)
+            wager.connect('activate',
+                lambda actor: self.set_wager(actor))
+            self.add(wager)
+            layout.set_fill(wager, True, False)
+
+            correct = clutter.Text(config.admin_font, "CORRECT")
+            correct.set_color('green')
+            correct.player = player
+            correct.set_reactive(True)
+            correct.connect('activate',
+                            lambda actor: self.correct(actor))
+            self.add(correct)
+            layout.set_fill(correct, True, False)
+
+            wrong = clutter.Text(config.admin_font, "WRONG")
+            wrong.set_color('red')
+            wrong.player = player
+            wrong.set_reactive(True)
+            wrong.connect('activate',
+                          lambda actor: self.wrong(actor))
+            self.add(wrong)
+            layout.set_fill(wrong, True, False)
+
+    def set_wager(self, wager):
+        try:
+            w = int(wager.get_text())
+        except ValueError:
+            return
+        wager.value = w
+
+    def correct(self, wager):
+        """
+        """
+        logging.info("Final jeopardy player %s ($%d) correct. Wager value = %d" % (wager.player.name,
+                                                                                   wager.player.score,
+                                                                                   wager.value))
+        wager.player.score += wager.value
+        logging.info("Player %s score now %d" % (wager.player.name, wager.player.score))
+
+    def wrong(self, wager):
+        """
+        """
+        logging.info("Final jeopardy player %s ($%d) wrong. Wager value = %d" % (wager.player.name,
+                                                                                 wager.player.score,
+                                                                                 wager.value))
+
+        wager.player.score -= wager.value
+        logging.info("Player %s score now %d" % (wager.player.name, wager.player.score))
+
+    def update(self):
+        """
+        Do nothing on update.
+        """
+        pass
 
 class IdleBox(clutter.Box):
     """
@@ -204,6 +286,7 @@ class Admin(clutter.Stage):
     ADMIN_DISPLAY_CLUE = 'ADMIN_DISPLAY_CLUE'
     ADMIN_IDLE = 'ADMIN_IDLE'
     ADMIN_INIT = 'ADMIN_INIT'
+    ADMIN_FINAL_ROUND = 'FINAL_ROUND'
 
     def __init__(self):
         super(Admin, self).__init__()
@@ -242,8 +325,10 @@ class Admin(clutter.Stage):
         new_state = self.state
         if game.state == game.IDLE:
             new_state = self.ADMIN_IDLE
-        if game.state == game.DISPLAY_CLUE:
+        elif game.state == game.DISPLAY_CLUE:
             new_state = self.ADMIN_DISPLAY_CLUE
+        elif game.state == game.FINAL_ROUND:
+            new_state = self.ADMIN_FINAL_ROUND
 
         if self.state != new_state:
             if new_state == self.ADMIN_IDLE:
@@ -251,11 +336,16 @@ class Admin(clutter.Stage):
                 idle_box = IdleBox()
                 idle_box.set_size(self.get_width(), self.get_height())
                 self.add(idle_box)
-            if new_state == self.ADMIN_DISPLAY_CLUE:
+            elif new_state == self.ADMIN_DISPLAY_CLUE:
                 self.remove_all()
                 clue_box = ClueBox()
                 clue_box.set_size(self.get_width(), self.get_height())
                 self.add(clue_box)
+            elif new_state == self.ADMIN_FINAL_ROUND:
+                self.remove_all()
+                final_round = FinalJeopardyBox()
+                final_round.set_size(self.get_width(), self.get_height())
+                self.add(final_round)
 
             self.state = new_state
 

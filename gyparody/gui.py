@@ -75,6 +75,8 @@ class CategoryOverlay(clutter.Box):
         super(CategoryOverlay, self).set_size(width * 5, height)
         for child in self.get_children():
             child.set_size(width, height)
+            for text in child.get_children():
+                text.set_size(width, height)
 
     def set_text(self, text):
         """
