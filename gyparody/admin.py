@@ -271,6 +271,31 @@ class ClueBox(clutter.Box):
                              clutter.BOX_ALIGNMENT_START,
                              clutter.BOX_ALIGNMENT_CENTER)
 
+        if game.selected_clue.is_daily_double():
+            dd_box = clutter.Box(clutter.BoxLayout())
+            self.add(dd_box)
+            dd_layout = dd_box.get_layout_manager()
+            dd_layout.set_vertical(True)
+            text = clutter.Text(config.admin_font, 'Daily Double Wager:')
+            text.set_color('white')
+            dd_box.add(text)
+            self.wager = clutter.Text(config.admin_font, '0')
+            self.wager.set_color('white')
+            self.wager.set_reactive(True)
+            self.wager.set_editable(True)
+            self.wager.connect('button-release-event',
+                lambda actor, event: self.set_key_focus(self.wager))
+            self.wager.connect('text-changed',
+                lambda actor: game.set_daily_double_wager(self.get_wager()))
+            dd_box.add(self.wager)
+            dd_layout.set_fill(self.wager, True, False)
+
+    def get_wager(self):
+        try:
+            return int(self.wager.get_text())
+        except ValueError:
+            return 0
+
     def update(self):
 
         for player in self.players:
@@ -325,7 +350,7 @@ class Admin(clutter.Stage):
         new_state = self.state
         if game.state == game.IDLE:
             new_state = self.ADMIN_IDLE
-        elif game.state == game.DISPLAY_CLUE:
+        elif game.state == game.DISPLAY_CLUE or game.state == game.DAILY_DOUBLE_AWAIT_WAGER:
             new_state = self.ADMIN_DISPLAY_CLUE
         elif game.state == game.FINAL_ROUND:
             new_state = self.ADMIN_FINAL_ROUND

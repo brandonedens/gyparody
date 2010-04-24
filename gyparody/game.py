@@ -354,7 +354,7 @@ class Game(object):
         """
         Game tick.
         """
-        if self.state == self.AWAIT_BUZZ:
+        if self.state == self.AWAIT_BUZZ and not self.selected_clue.is_daily_double():
             # Check the buzz timeout if there is one set.
             if self.timeout_start != None:
                 if time.time() - self.timeout_start > config.await_buzz_timeout:
@@ -362,7 +362,7 @@ class Game(object):
                     # Disable all lit players.
                     game_buttons.reset_player_lights()
                     self.state = self.DISPLAY_QUESTION
-        elif self.state == self.AWAIT_ANSWER:
+        elif self.state == self.AWAIT_ANSWER and not self.selected_clue.is_daily_double():
             # Check the answer timeout if there is one set.
             if self.timeout_start != None:
                 if time.time() - self.timeout_start > config.await_answer_timeout:
@@ -409,7 +409,8 @@ class Game(object):
         # player has to resond with a question to the given answer.
         self.timeout_start = time.time()
         # Record the time of the buzz-in for timeout
-        self.flash_player_name = True
+        if not self.selected_clue.is_daily_double():
+            self.flash_player_name = True
         self.state = self.AWAIT_ANSWER
 
     def correct_answer(self):
@@ -445,6 +446,8 @@ class Game(object):
 
         if self.selected_clue.is_daily_double():
             self.players[self.buzzed_player].score -= self.wager
+            if self.players[self.buzzed_player].score < 0:
+                self.players[self.buzzed_player].score = 0
         else:
             self.players[self.buzzed_player].score -= self.selected_clue.value
         self.dump_scores()
@@ -505,8 +508,8 @@ class Game(object):
             self.state = self.IDLE
             self.handle_round_completion()
         elif self.state == self.DAILY_DOUBLE_AWAIT_WAGER:
-            logging.debug("Going to DISPLAY_CLUE, clear daily double")
-            self.state = self.DISPLAY_CLUE
+            logging.debug("Going to AWAIT_BUZZ, clear daily double")
+            self.state = self.AWAIT_BUZZ
             self.clear_daily_double = True
         elif self.state == self.FINAL_ROUND:
             logging.debug('Going to FINAL_ROUND_WAGER, clear final round')
