@@ -188,39 +188,6 @@ class IdleBox(clutter.Box):
     def update(self):
         self.player_score_box.update()
 
-class DailyDoubleWagerBox(clutter.Box):
-    """
-    """
-
-    def __init__(self):
-        super(DailyDoubleWagerBox, self).__init__(clutter.BoxLayout())
-        layout = self.get_layout_manager()
-        self.set_color(config.background_color)
-
-        text = clutter.Text(config.admin_font, 'Daily Double Wager:')
-        text.set_color('white')
-        self.add(text)
-        self.wager = clutter.Text(config.admin_font, '0')
-        self.wager.set_color('white')
-        self.wager.set_reactive(True)
-        self.wager.set_editable(True)
-        self.wager.connect('button-release-event',
-            lambda actor, event: self.set_key_focus(self.wager))
-        self.wager.connect('text-changed',
-            lambda actor: game.set_daily_double_wager(self.get_wager()))
-        self.add(self.wager)
-        layout.set_fill(self.wager, True, False)
-
-    def get_wager(self):
-        try:
-            return int(self.wager.get_text())
-        except ValueError:
-            return 0
-
-    def update(self):
-        pass
-
-
 class ClueBox(clutter.Box):
     """
     Box for holding host clue information.
@@ -287,8 +254,6 @@ class ClueBox(clutter.Box):
             self.wager.set_color('white')
             self.wager.set_reactive(True)
             self.wager.set_editable(True)
-            self.wager.connect('button-release-event',
-                lambda actor, event: self.set_key_focus(self.wager))
             self.wager.connect('text-changed',
                 lambda actor: game.set_daily_double_wager(self.get_wager()))
             dd_box.add(self.wager)
@@ -321,7 +286,7 @@ class Admin(clutter.Stage):
         super(Admin, self).__init__()
 
         self.set_fullscreen(False)
-        self.set_size(640, 480)
+        self.set_size(config.admin_screen_width, config.admin_screen_height)
         self.set_user_resizable(True)
         self.set_color('black')
 

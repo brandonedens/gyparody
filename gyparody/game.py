@@ -228,6 +228,7 @@ class Game(object):
         self.wager = 0
 
         self.buzzed_player = None
+        self.buzzer_lockouts = {}
 
         self.load_final_round()
 
@@ -577,9 +578,13 @@ class Game(object):
         if completed:
             logging.debug('The round is completed.')
             if self.current_round == 'round1':
-                logging.debug('Advance from round 1 to round 2')
-                self.load_round('round2')
-                self.update_game_board = True
+                if config.game_rounds == 2:
+                    logging.debug('Advance from round 1 to round 2')
+                    self.load_round('round2')
+                    self.update_game_board = True
+                else:
+                    logging.debug('Advance from round 1 to final round')
+                    self.state = self.FINAL_ROUND
             elif self.current_round == 'round2':
                 logging.debug('Advance from round 2 to final round')
                 self.state = self.FINAL_ROUND

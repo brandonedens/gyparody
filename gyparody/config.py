@@ -69,10 +69,10 @@ class Config(object):
         # Timeouts
         # After a player buzzes in the number of seconds alotted for them to
         # answer.
-        self.await_answer_timeout = 5
+        self.await_answer_timeout = 10
         # After question is read, the number of seconds to await an incoming
         # player buzz.
-        self.await_buzz_timeout = 10
+        self.await_buzz_timeout = 15
         self.buzzer_lockout_time = 1
 
         # Screen setup options
@@ -81,6 +81,11 @@ class Config(object):
         self.screen_height = 600
         self.fullscreen_width = 1366
         self.fullscreen_height = 768
+        self.admin_screen_width = 800
+        self.admin_screen_height = 600
+
+        # Number of rounds in game
+        self.game_rounds = 1
 
         # Player scores on the main screen
         self.display_player_scores = True
@@ -123,13 +128,13 @@ class Config(object):
         # Final round font
         self.final_round_font = 'Gyparody 96'
 
-        self.round_1_data = './docs/round1.yaml'
-        self.round_2_data = './docs/round2.yaml'
-        self.final_round = './docs/final_round.yaml'
+        self.round_1_data = './etc/round1.yaml'
+        self.round_2_data = './etc/round2.yaml'
+        self.final_round = './etc/final_round1.yaml'
 
-        self.player_a_name = 'Brandon'
-        self.player_b_name = 'Paolo'
-        self.player_c_name = 'Foo'
+        self.player_a_name = 'Team 1'
+        self.player_b_name = 'Team 2'
+        self.player_c_name = 'Team 3'
 
     def load(self):
         config_filename = self._find_config_file()
