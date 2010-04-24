@@ -550,7 +550,7 @@ class GUI(clutter.Stage):
             self.player_buzz_overlay.set_opacity(255)
             self.player_buzz_overlay.set_text(player_name)
             self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
-                                             1000,
+                                             3000,
                                              'opacity', 0)
         if game.check_flash_player_score():
             player = game.players[game.buzzed_player]
@@ -583,7 +583,8 @@ class GUI(clutter.Stage):
         elif game.state in (game.DISPLAY_CLUE,
                             game.AWAIT_BUZZ,
                             game.AWAIT_ANSWER,
-                            game.DAILY_DOUBLE_AWAIT_WAGER):
+                            game.DAILY_DOUBLE_AWAIT_WAGER,
+                            game.DAILY_DOUBLE_SHOW_CLUE):
             new_gui_state = self.SHOW_CLUE
         elif game.state == game.DISPLAY_QUESTION:
             new_gui_state = self.SHOW_QUESTION

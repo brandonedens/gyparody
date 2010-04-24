@@ -274,7 +274,6 @@ class Game(object):
         fh.close()
         self.final_round = FinalRound(final_round_data)
 
-
     def save(self):
         """
         Save the current state of the game to disk.
@@ -336,6 +335,7 @@ class Game(object):
         """
         Set the buzzed player which is an index 0, 1, 2.
         """
+        self.buzzed_players.append(index)
         self.buzzed_player = index
 
     def get_categories(self):
