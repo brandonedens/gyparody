@@ -92,6 +92,9 @@ class ClueSquare(Square):
     def on_click(self, actor, event):
         """
         """
+        if game.state != game.IDLE:
+            # Reject clue square click if not in idle state
+            return
         logging.debug("Clue square click! state = %s" % self.clue.state)
         if self.clue.state == 'unanswered':
             self.clue.state = 'selected'
