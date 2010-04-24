@@ -329,7 +329,7 @@ class Game(object):
         """
         Given a player return that player's index.
         """
-        self.players.index(player)
+        return self.players.index(player)
 
     def set_buzzed_player(self, index):
         """
