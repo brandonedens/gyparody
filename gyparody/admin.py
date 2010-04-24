@@ -66,6 +66,20 @@ class PlayerScoreBox(clutter.Box):
             self.add(score)
             layout.set_fill(score, True, False)
 
+        text = clutter.Text(config.admin_font_header, "DRINKS")
+        self.add(text)
+        for player in self.players:
+            drink = clutter.Text(config.admin_font, 'Player %s Drink' % player.name)
+            drink.player = player
+            drink.set_color('white')
+            drink.set_reactive(True)
+            drink.connect('button-release-event',
+                lambda actor, event: self.drink(actor.player))
+            self.add(drink)
+
+    def drink(self, player):
+        player.adjust_score(config.drink_value)
+
     def set_score(self, score):
         try:
             s = int(score.get_text())

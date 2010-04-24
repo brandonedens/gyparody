@@ -141,6 +141,8 @@ class Config(object):
         self.player_b_name = 'Team 2'
         self.player_c_name = 'Team 3'
 
+        self.drink_value = 100
+
     def load(self):
         config_filename = self._find_config_file()
         if config_filename:
