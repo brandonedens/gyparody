@@ -243,6 +243,27 @@ class PlayerScoreOverlay(clutter.Box):
         self.text = Text(config.player_overlay_font, text)
         self.add(self.text)
 
+class AllPlayerScoresOverlay(clutter.Box):
+    """
+    An overlay for all player score information.
+    """
+
+    def __init__(self):
+        """
+        """
+        super(AllPlayerScoresOverlay, self).__init__(clutter.BinLayout(
+            clutter.BIN_ALIGNMENT_CENTER,
+            clutter.BIN_ALIGNMENT_CENTER))
+        self.set_color(config.square_background_color)
+        self.text = Text('', '')
+
+    def set_text(self, text):
+        """
+        """
+        self.remove(self.text)
+        self.text = Text(config.all_player_overlay_font, text)
+        self.add(self.text)
+
 class GUI(clutter.Stage):
     """
     """
@@ -334,6 +355,15 @@ class GUI(clutter.Stage):
                                           self.get_height())
         self.player_score_overlay.set_opacity(0)
         self.add(self.player_score_overlay)
+
+        # Overlay box for displaying all player scores.
+        self.all_player_scores_overlay = AllPlayerScoresOverlay()
+        self.all_player_scores_overlay.set_size(self.get_width(),
+                                          self.get_height())
+        self.all_player_scores_overlay.set_opacity(0)
+        self.add(self.all_player_scores_overlay)
+
+        self.flashing_scores = False
 
         # Overlay box for daily double.
         self.daily_double_overlay = DailyDoubleOverlay()
@@ -429,6 +459,8 @@ class GUI(clutter.Stage):
         elif event.keyval == clutter.keysyms.f:
             # Fullscreen play area.
             self.set_fullscreen(not self.get_fullscreen())
+        elif event.keyval == clutter.keysyms.s:
+            self.flash_scores()
 
     def on_allocation_changed(self, stage, box, flags):
         """
@@ -453,6 +485,7 @@ class GUI(clutter.Stage):
         self.player_buzz_overlay.set_size(self.get_width(), self.get_height())
         self.daily_double_overlay.set_size(self.get_width(), self.get_height())
         self.final_round_overlay.set_size(self.get_width(), self.get_height())
+        self.all_player_scores_overlay.set_size(self.get_width(), self.get_height())
 
     def on_tick(self):
         """
@@ -587,4 +620,20 @@ class GUI(clutter.Stage):
                 self.final_round_overlay.set_text(game.final_round.question)
 
             self.gui_state = new_gui_state
+
+    def flash_scores(self):
+        if self.flashing_scores == False:
+            sc = ""
+            for player in game.players:
+                sc += '%s\n$%d\n' % (player.name, player.score)
+            self.all_player_scores_overlay.set_text(sc)
+            self.all_player_scores_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             500,
+                                             'opacity', 255)
+            self.flashing_scores = True
+        else:
+            self.all_player_scores_overlay.animate(clutter.EASE_IN_CUBIC,
+                                             500,
+                                             'opacity', 0)
+            self.flashing_scores = False
 
