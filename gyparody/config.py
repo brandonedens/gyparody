@@ -102,6 +102,11 @@ class Config(object):
         # Square background color
         self.square_background_color = clutter.Color(6, 11, 121)
 
+        # Increasing score color
+        self.increase_score_color = clutter.Color(0, 255, 0)
+        # Decreasing score color
+        self.decrease_score_color = clutter.Color(255, 0, 0)
+
         # Category settings
         self.category_font = "Haettenschweiler 18"
 

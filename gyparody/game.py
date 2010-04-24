@@ -51,6 +51,15 @@ class Player(object):
         """
         self.name = name
         self.score = score
+        self.last_score_change = 0
+
+    def set_score(self, new_score):
+        self.last_score_change = new_score - self.score
+        self.score = new_score
+
+    def adjust_score(self, offset):
+        self.last_score_change = offset
+        self.score += offset
 
     def marshall(self):
         """
@@ -58,6 +67,7 @@ class Player(object):
         data = {}
         data['name'] = self.name
         data['score'] = self.score
+        data['last_score_change'] = self.last_score_change
         return data
 
 class Clue(object):
@@ -436,9 +446,9 @@ class Game(object):
             return
 
         if self.selected_clue.is_daily_double():
-            self.players[self.buzzed_player].score += self.wager
+            self.players[self.buzzed_player].adjust_score(self.wager)
         else:
-            self.players[self.buzzed_player].score += self.selected_clue.value
+            self.players[self.buzzed_player].adjust_score(self.selected_clue.value)
         self.dump_scores()
 
         # Disable all lit players.
@@ -459,11 +469,11 @@ class Game(object):
             return
 
         if self.selected_clue.is_daily_double():
-            self.players[self.buzzed_player].score -= self.wager
+            self.players[self.buzzed_player].adjust_score(-self.wager)
             if self.players[self.buzzed_player].score < 0:
-                self.players[self.buzzed_player].score = 0
+                self.players[self.buzzed_player].set_score(0)
         else:
-            self.players[self.buzzed_player].score -= self.selected_clue.value
+            self.players[self.buzzed_player].adjust_score(-self.selected_clue.value)
         self.dump_scores()
 
         # Disable all lit players.

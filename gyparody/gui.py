@@ -233,15 +233,30 @@ class PlayerScoreOverlay(clutter.Box):
         super(PlayerScoreOverlay, self).__init__(clutter.BinLayout(
             clutter.BIN_ALIGNMENT_CENTER,
             clutter.BIN_ALIGNMENT_CENTER))
+        box = clutter.Box(clutter.BoxLayout())
+        layout = box.get_layout_manager()
+        layout.set_vertical(True)
         self.set_color(config.square_background_color)
-        self.text = Text('', '')
+        self.name = Text(config.player_overlay_font, '')
+        box.add(self.name)
+        self.score = Text(config.player_overlay_font, '')
+        box.add(self.score)
+        self.add(box)
 
-    def set_text(self, text):
+    def set_content(self, name, score):
         """
         """
-        self.remove(self.text)
-        self.text = Text(config.player_overlay_font, text)
-        self.add(self.text)
+        self.name.set_text(config.player_overlay_font, name)
+        if score > 0:
+            self.score.set_color(config.increase_score_color)
+        else:
+            self.score.set_color(config.decrease_score_color)
+        if score < 0:
+            minus = '-'
+            score = -score
+        else:
+            minus = ''
+        self.score.set_text(config.player_overlay_font, '%s$%d' % (minus, score))
 
 class AllPlayerScoresOverlay(clutter.Box):
     """
@@ -483,6 +498,7 @@ class GUI(clutter.Stage):
         self.board_box.set_size(self.get_width(), self.get_height())
         self.category_overlay.set_size(self.get_width(), self.get_height())
         self.player_buzz_overlay.set_size(self.get_width(), self.get_height())
+        self.player_score_overlay.set_size(self.get_width(), self.get_height())
         self.daily_double_overlay.set_size(self.get_width(), self.get_height())
         self.final_round_overlay.set_size(self.get_width(), self.get_height())
         self.all_player_scores_overlay.set_size(self.get_width(), self.get_height())
@@ -538,10 +554,9 @@ class GUI(clutter.Stage):
                                              'opacity', 0)
         if game.check_flash_player_score():
             player = game.players[game.buzzed_player]
-            text = '%s\n$%d' % (player.name, player.score)
-            self.player_buzz_overlay.set_opacity(255)
-            self.player_buzz_overlay.set_text(text)
-            self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
+            self.player_score_overlay.set_opacity(255)
+            self.player_score_overlay.set_content(player.name, player.last_score_change)
+            self.player_score_overlay.animate(clutter.EASE_IN_CUBIC,
                                              1000,
                                              'opacity', 0)
         if game.check_flash_daily_double():
