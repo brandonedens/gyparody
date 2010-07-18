@@ -1,67 +1,68 @@
 ---
-- Tools:
-    - answer: HDMoore created this tool to hack shit
-      question: Metasploit
-    - answer: is a programming tool for memory debugging comes from the main entrance to Valhalla  in Norse mythology.
-      question: Valgrind
-    - answer: Web app test tool named after a bodily function
-      question: Burp
-    - answer: Made by hobbit, used for pretty much everything
-      question: Netcat
-    - answer: DHS funded this IDS project.
-      question: Seuricata
+- Hardware Hacking Questions:
+    - answer: "This component has terminals named base, emitter, and collector"
+      question: Transistor
+    - answer: Widely used timer IC in production since 1971
+      question: 555
+    - answer:
+        image: './inverter.png'
+      question: Inverter
+    - answer: Hole in a circuit board that connects the layers
+      question: Via
+    - answer: Fixed grid of squares on an oscilloscope display
+      question: Graticule
 
-- Famous Chests:
+- Computer Programming Languages:
     - answer:
-        image: './chests/Steve-jobs-apple.jpg'
-      question: Steve Jobs
+        image: './programming/python.png'
+      question: pYTHONG
     - answer:
-        image: './chests/bill-gates.jpg'
-      question: Bill Gates
+        image: './programming/cpp.png'
+      question: C++
+      dailydouble: Yes
     - answer:
-        image: './chests/dan-kaminsky.jpg'
-      question: <3 <3 Dan Kaminsky <3 <3
+        image: './programming/common_lisp.png'
+      question: Common Lisp
     - answer:
-        image: './chests/nortion.jpg'
-      question: Norton dude
+        image: './programming/ruby.png'
+      question: Ruby
     - answer:
-        image: './chests/dragorn.jpg'
-      question: DRAGORN <3 <3 <3 <3 <3
+        image: './programming/cobol.png'
+      question: COBOLT
 
-- Potent Potables:
-    - answer: This HIGHLY caffeinated soda is a staple of early hackers
-      question: JOLT
-      dailydouble: True
-    - answer: This drink originated from an RPG
-      question: Mana Potion
-    - answer: The bottle is "Ribbed" for YOUR pleasure
-      question: Bawls
-    - answer: The motto of this drink translates to "you'll get used to it"
-      question: Club Mate
-    - answer: Half the size yet more expensive than redbull, tastes like shit, lasts for hours.
-      question: 5 Hour Energy
+- Ace of Base:
+    - answer: 101 0011 1001
+      question: Base 2 (1337)
+    - answer: 1 7510
+      question: (base 8) (8008)
+    - answer: 3 1B13
+      question: (base 12) (65535)
+    - answer: 4 3450
+      question: (base 9) (28800)
+    - answer: This was their hit song in the 90s
+      question: The sign (the dennis)
 
-- Know your Services:
-    - answer: Gopher
-      question: 70 TCP+UDP
-    - answer: shell/cmd
-      question: 514 TCP
-    - answer: AppleTalk Echo Protocol
-      question: 4 UDP
-    - answer: Descent 3
-      question: 2092 TCP+UDP
-    - answer: Resource Location/rlp
-      question: 39 TCP+UDP
+- Famous Robots:
+    - answer: Smokes cigars, was canceled (but is back!)
+      question: Bender
+    - answer: This crime fighting robot was featured on TGIF
+      question: Urkle bot
+    - answer: Instead of a hospital, this robot went to Radio Shack
+      question: Johnny 5 (alive)
+    - answer: "This android is always punctual he's fully functional and anatomically correct."
+      question: Data
+    - answer: Robot sidekick with a mohawk made by Grant from Myth Busters
+      question: Geoff Peterson
 
-- ConQuestions:
-    - answer: Concrete in Toilet
-      question: Defcon
-    - answer: Original took place in a hotel in San Diego
-      question: Toorcon
-    - answer: European Hacker organization that has been around for 26 years
-      question: CCC
-    - answer: Who was the "burn the witch" chant about at Defcon 15
-      question: Dateline Reporter at defcon
-    - answer: BEST NEW HACKER CON EVER
-      question: QUAHOG CON 8===D :^)
+- US Airport Abbrev.:
+    - answer: PVD
+      question: Providence
+    - answer: SFO
+      question: San Francisco
+    - answer: SJC
+      question: San Jose
+    - answer: DCA
+      question: Washington DC
+    - answer: ORH
+      question: Worcester, MA
 
