@@ -550,7 +550,7 @@ class GUI(clutter.Stage):
             self.player_buzz_overlay.set_opacity(255)
             self.player_buzz_overlay.set_text(player_name)
             self.player_buzz_overlay.animate(clutter.EASE_IN_CUBIC,
-                                             3000,
+                                             2000,
                                              'opacity', 0)
         if game.check_flash_player_score():
             player = game.players[game.buzzed_player]
