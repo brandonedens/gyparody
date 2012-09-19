@@ -56,7 +56,7 @@ Installing Needed Libraries
 
 Copies of gyparody software can be retrieved by::
 
-  git clone http://brandonedens.org/git/gyparody.git
+  git clone https://github.com/brandonedens/gyparody.git
 
 To execute the software you will need clutter >= 1.2 and pyclutter > 1.0. This
 software is relatively new (as of 2010-04-21) with libclutter 1.2 version not
@@ -246,4 +246,3 @@ http://www.flickr.com/photos/humboldthead/4536402090/
 
 ./tests/test.avi courtesy of 20th Century Fox:
 http://www.google.com/search?q=20th+centruy+fox+intro&tbo=p&tbs=vid%3A1&source=vgc&hl=en&aq=f
-
